@@ -1,156 +1,358 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>UPSC2027</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --bg:#0c0c0c;--surface:#141414;--border:#242424;
-      --text:#ededed;--sub:#666;--hover:#1c1c1c;--active:#202020;
-      --sidebar-w:220px;--topbar-h:52px;--subnav-h:40px;
-    }
-    body.light{--bg:#f8f8f8;--surface:#fff;--border:#e4e4e4;--text:#111;--sub:#888;--hover:#f0f0f0;--active:#ebebeb;}
-    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s;-webkit-font-smoothing:antialiased;}
-    button{all:unset;cursor:pointer;font-family:'Inter',sans-serif;}
-    a{color:inherit;text-decoration:none;}
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>UPSC2027</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET & BASE ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #ffffff;
+  --surface: #fafafa;
+  --border: #ebebeb;
+  --text: #111111;
+  --muted: #999999;
+  --hover: #f4f4f4;
+  --active-bg: #f0f0f0;
+  --active-bar: #111111;
+  --nav-h: 56px;
+  --side-w: 210px;
+}
+body.dark {
+  --bg: #0f0f0f;
+  --surface: #161616;
+  --border: #272727;
+  --text: #f0f0f0;
+  --muted: #666666;
+  --hover: #1e1e1e;
+  --active-bg: #222222;
+  --active-bar: #f0f0f0;
+}
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 15px;
+  line-height: 1.5;
+  transition: background .2s, color .2s;
+  -webkit-font-smoothing: antialiased;
+}
+button { all: unset; cursor: pointer; font-family: inherit; }
+a { color: inherit; text-decoration: none; }
 
-    /* TOPBAR */
-    #topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:0;}
-    #hamburger{display:none;font-size:20px;padding:6px 10px 6px 0;flex-shrink:0;}
-    .brand{font-size:15px;font-weight:600;letter-spacing:.4px;margin-right:24px;flex-shrink:0;cursor:pointer;}
-    .brand span{font-weight:300;opacity:.45;}
-    #topnav{display:flex;align-items:stretch;gap:0;flex:1;overflow-x:auto;scrollbar-width:none;}
-    #topnav::-webkit-scrollbar{display:none;}
-    .tn-item{position:relative;display:flex;align-items:center;padding:0 15px;height:var(--topbar-h);font-size:14px;font-weight:500;color:var(--sub);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;user-select:none;}
-    .tn-item:hover,.tn-item.active{color:var(--text);border-bottom-color:var(--text);}
-    .caret{font-size:9px;margin-left:4px;opacity:.4;}
-    .tn-dd{position:absolute;top:calc(var(--topbar-h) - 2px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;min-width:160px;padding:6px 0;display:none;z-index:9999;box-shadow:0 8px 24px rgba(0,0,0,.35);}
-    .tn-item:hover .tn-dd{display:block;}
-    .tn-dd a{display:block;padding:9px 18px;font-size:14px;color:var(--sub);transition:background .1s,color .1s;cursor:pointer;}
-    .tn-dd a:hover{background:var(--hover);color:var(--text);}
-    #tbright{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
-    .tbtn{font-size:14px;padding:5px 12px;border:1px solid var(--border);border-radius:6px;color:var(--sub);transition:background .15s;}
-    .tbtn:hover{background:var(--hover);color:var(--text);}
+/* ── TOP NAV ── */
+#nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  height: var(--nav-h);
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center;
+  padding: 0 24px; gap: 32px;
+}
+.nav-brand {
+  font-size: 16px; font-weight: 600;
+  letter-spacing: -.2px; flex-shrink: 0; cursor: pointer;
+}
+.nav-brand em { font-style: normal; font-weight: 400; color: var(--muted); }
 
-    /* SUBNAV */
-    #subnav{position:fixed;top:var(--topbar-h);left:0;right:0;z-index:200;min-height:var(--subnav-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:4px 16px;gap:4px;overflow-x:auto;scrollbar-width:none;flex-wrap:wrap;}
-    #subnav::-webkit-scrollbar{display:none;}
-    #subnav:empty{min-height:0;border-bottom:none;padding:0;}
-    .sn-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;color:var(--sub);border:1px solid transparent;white-space:nowrap;transition:all .15s;}
-    .sn-pill:hover{color:var(--text);border-color:var(--border);}
-    .sn-pill.active{color:var(--text);background:var(--active);border-color:var(--border);}
+/* nav links */
+.nav-links {
+  display: flex; align-items: stretch;
+  gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none;
+}
+.nav-links::-webkit-scrollbar { display: none; }
 
-    /* LAYOUT */
-    #layout{display:flex;padding-top:calc(var(--topbar-h) + var(--subnav-h));min-height:100vh;position:relative;}
+.nav-link {
+  position: relative;
+  display: flex; align-items: center; gap: 4px;
+  padding: 0 14px; height: var(--nav-h);
+  font-size: 14px; font-weight: 500; color: var(--muted);
+  white-space: nowrap; cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color .15s, border-color .15s;
+}
+.nav-link:hover { color: var(--text); }
+.nav-link.active { color: var(--text); border-bottom-color: var(--text); }
+.nav-link svg { width: 10px; height: 10px; fill: none; stroke: currentColor; stroke-width: 2; flex-shrink: 0; opacity: .5; }
 
-    /* SIDEBAR */
-    #sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:calc(var(--topbar-h)+var(--subnav-h));left:0;bottom:0;overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 0 40px;transition:transform .25s ease;scrollbar-width:thin;scrollbar-color:var(--border) transparent;z-index:160;}
-    .sb-section{margin-bottom:20px;}
-    .sb-label{font-size:11px;font-weight:600;letter-spacing:1px;color:var(--sub);text-transform:uppercase;padding:0 18px 8px;}
-    .sb-item{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:15px;font-weight:400;color:var(--sub);cursor:pointer;border-left:2px solid transparent;transition:all .15s;}
-    .sb-item:hover{color:var(--text);background:var(--hover);}
-    .sb-item.active{color:var(--text);background:var(--active);border-left-color:var(--text);font-weight:500;}
-    .sb-icon{font-size:16px;flex-shrink:0;}
-    .sb-sub{padding-left:14px;display:none;}
-    .sb-sub .sb-item{font-size:14px;padding:7px 18px 7px 14px;border-left:1px solid var(--border);}
-    #overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.5);}
-    #overlay.show{display:block;}
+/* dropdown */
+.dropdown {
+  position: absolute; top: calc(100% + 1px); left: 0;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; padding: 6px; min-width: 170px;
+  display: none; z-index: 500;
+  box-shadow: 0 4px 20px rgba(0,0,0,.08);
+}
+body.dark .dropdown { box-shadow: 0 4px 20px rgba(0,0,0,.4); }
+.nav-link:hover .dropdown { display: block; }
+.dropdown a {
+  display: block; padding: 8px 12px; font-size: 14px;
+  color: var(--muted); border-radius: 6px; cursor: pointer;
+  transition: background .1s, color .1s;
+}
+.dropdown a:hover { background: var(--hover); color: var(--text); }
 
-    /* MAIN */
-    #main{flex:1;margin-left:var(--sidebar-w);padding:28px 28px 60px;min-width:0;}
-    .page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
-    .page-title{font-size:22px;font-weight:600;letter-spacing:-.3px;}
-    .page-sub{font-size:13px;color:var(--sub);margin-top:3px;}
-    .view-toggle{display:flex;gap:4px;}
-    .vbtn{padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:15px;color:var(--sub);transition:all .15s;}
-    .vbtn:hover,.vbtn.on{color:var(--text);background:var(--active);border-color:var(--border);}
+/* right side */
+.nav-right { display: flex; align-items: center; gap: 10px; margin-left: auto; flex-shrink: 0; }
+.icon-btn {
+  width: 34px; height: 34px; border-radius: 8px;
+  border: 1px solid var(--border); color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; transition: background .15s, color .15s;
+}
+.icon-btn:hover { background: var(--hover); color: var(--text); }
+#ham { display: none; }
 
-    .breadcrumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-bottom:20px;}
-    .breadcrumb span{cursor:pointer;transition:color .15s;}
-    .breadcrumb span:hover{color:var(--text);}
-    .breadcrumb .cur{color:var(--text);font-weight:500;cursor:default;}
-    .breadcrumb .sep{opacity:.3;}
+/* ── CONTEXT BAR ── */
+#ctx {
+  position: fixed; top: var(--nav-h); left: 0; right: 0; z-index: 100;
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 6px;
+  padding: 0 24px; height: 44px;
+  overflow-x: auto; scrollbar-width: none;
+}
+#ctx:empty { height: 0; border: none; }
+#ctx::-webkit-scrollbar { display: none; }
+.ctx-pill {
+  padding: 4px 14px; border-radius: 20px; font-size: 13px;
+  font-weight: 500; color: var(--muted); white-space: nowrap;
+  border: 1px solid transparent; transition: all .15s;
+}
+.ctx-pill:hover { color: var(--text); border-color: var(--border); }
+.ctx-pill.on { color: var(--text); background: var(--active-bg); border-color: var(--border); }
 
-    /* FILES */
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;}
-    .list{display:flex;flex-direction:column;gap:2px;}
-    .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 14px;cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,transform .15s;}
-    .card:hover{border-color:var(--text);transform:translateY(-2px);}
-    .card .c-icon{font-size:26px;}
-    .card .c-name{font-size:13px;font-weight:500;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-    .card .c-type{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;}
-    .row{display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:background .15s,border-color .15s;}
-    .row:hover{background:var(--hover);border-color:var(--border);}
-    .row .c-icon{font-size:18px;flex-shrink:0;width:26px;text-align:center;}
-    .row .c-name{font-size:13px;font-weight:400;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .row .c-type{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;}
-    .row .c-chev{color:var(--sub);font-size:14px;flex-shrink:0;}
+/* ── LAYOUT ── */
+#shell {
+  display: flex;
+  /* adjusted dynamically by JS */
+  padding-top: calc(var(--nav-h) + 44px);
+  min-height: 100vh;
+}
 
-    .state{text-align:center;padding:80px 20px;color:var(--sub);font-size:14px;line-height:1.8;}
-    .state .err{color:#e07070;font-size:12px;margin-top:14px;font-family:monospace;background:rgba(200,80,80,.08);padding:12px 16px;border-radius:8px;text-align:left;word-break:break-all;border:1px solid rgba(200,80,80,.2);}
-    .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 14px;}
-    @keyframes spin{to{transform:rotate(360deg);}}
+/* ── SIDEBAR ── */
+#side {
+  width: var(--side-w); flex-shrink: 0;
+  position: fixed;
+  top: calc(var(--nav-h) + 44px);
+  left: 0; bottom: 0;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; padding: 20px 0;
+  transition: transform .25s ease;
+  scrollbar-width: none; z-index: 90;
+}
+#side::-webkit-scrollbar { display: none; }
 
-    /* VIEWER */
-    #viewer{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.96);display:none;flex-direction:column;}
-    #viewer.on{display:flex;}
-    .vbar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;flex-shrink:0;}
-    .vbar-name{flex:1;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-    .vbar-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--sub);transition:all .15s;}
-    .vbar-btn:hover{background:var(--hover);color:var(--text);}
-    #vcontent{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
-    #vcontent img{max-width:100%;max-height:100%;object-fit:contain;padding:20px;display:block;}
-    #vcontent iframe{width:100%;height:100%;border:none;}
-    .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:24px;padding:10px 16px;border-radius:8px;transition:background .15s;z-index:10;}
-    .nav-arrow:hover{background:rgba(255,255,255,.18);}
-    #prevBtn{left:16px;}#nextBtn{right:16px;}
-    .nav-arrow:disabled{opacity:.15;pointer-events:none;}
-    .img-counter{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,.35);pointer-events:none;}
+.side-group { margin-bottom: 28px; }
+.side-label {
+  font-size: 11px; font-weight: 600; letter-spacing: .8px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 0 20px 8px;
+}
+.side-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 9px 20px; font-size: 14px; font-weight: 400;
+  color: var(--muted); cursor: pointer;
+  border-left: 2px solid transparent;
+  transition: all .15s;
+}
+.side-item:hover { color: var(--text); background: var(--hover); }
+.side-item.on { color: var(--text); background: var(--active-bg); border-left-color: var(--active-bar); font-weight: 500; }
+.side-item .si { font-size: 15px; }
 
-    /* RESPONSIVE */
-    @media(max-width:768px){
-      #hamburger{display:block;}
-      #sidebar{transform:translateX(-100%);}
-      #sidebar.open{transform:translateX(0);}
-      #main{margin-left:0;padding:20px 16px 60px;}
-      .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
-      .page-title{font-size:18px;}
-      #topnav{display:none;}
-      .nav-arrow{padding:8px 12px;font-size:20px;}
-      #prevBtn{left:8px;}#nextBtn{right:8px;}
-    }
-  </style>
+.side-sub { display: none; }
+.side-sub .side-item {
+  font-size: 13px; padding: 7px 20px 7px 44px;
+  border-left: none; border-left-color: transparent;
+}
+.side-sub .side-item:hover { color: var(--text); background: var(--hover); }
+.side-sub .side-item.on { color: var(--text); font-weight: 500; background: var(--active-bg); }
+
+/* overlay */
+#veil {
+  display: none; position: fixed; inset: 0; z-index: 80;
+  background: rgba(0,0,0,.4);
+}
+#veil.on { display: block; }
+
+/* ── MAIN ── */
+#main {
+  flex: 1; margin-left: var(--side-w);
+  padding: 32px 32px 80px; min-width: 0;
+}
+
+/* header */
+.main-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 6px; gap: 12px;
+}
+.main-title { font-size: 22px; font-weight: 600; letter-spacing: -.3px; }
+.view-btns { display: flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+.vb {
+  padding: 7px 12px; font-size: 15px; color: var(--muted);
+  transition: background .15s, color .15s;
+}
+.vb:hover { color: var(--text); background: var(--hover); }
+.vb.on { color: var(--text); background: var(--active-bg); }
+.vb:first-child { border-right: 1px solid var(--border); }
+
+/* breadcrumb */
+.crumbs {
+  display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+  font-size: 13px; color: var(--muted); margin-bottom: 24px; margin-top: 6px;
+}
+.crumbs span { cursor: pointer; transition: color .15s; }
+.crumbs span:hover { color: var(--text); }
+.crumbs .sep { opacity: .3; user-select: none; }
+.crumbs .here { color: var(--text); font-weight: 500; cursor: default; }
+
+/* ── FILE GRID ── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px;
+}
+.file-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 16px; cursor: pointer;
+  display: flex; flex-direction: column; gap: 12px;
+  transition: border-color .15s, box-shadow .15s;
+}
+.file-card:hover {
+  border-color: var(--text);
+  box-shadow: 0 2px 12px rgba(0,0,0,.06);
+}
+body.dark .file-card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.3); }
+.fc-icon { font-size: 28px; line-height: 1; }
+.fc-name {
+  font-size: 13px; font-weight: 500; line-height: 1.4;
+  overflow: hidden; display: -webkit-box;
+  -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+}
+.fc-type { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; }
+
+/* ── FILE LIST ── */
+.flist { display: flex; flex-direction: column; }
+.file-row {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 14px; border-radius: 8px; cursor: pointer;
+  transition: background .12s;
+}
+.file-row:hover { background: var(--hover); }
+.fr-icon { font-size: 19px; flex-shrink: 0; width: 28px; text-align: center; }
+.fr-name { font-size: 15px; font-weight: 400; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fr-type { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0; }
+.fr-arrow { color: var(--muted); font-size: 16px; flex-shrink: 0; }
+.flist-divider { height: 1px; background: var(--border); margin: 0 14px; }
+
+/* ── STATE ── */
+.state { text-align: center; padding: 80px 20px; color: var(--muted); font-size: 15px; }
+.state-icon { font-size: 40px; margin-bottom: 14px; }
+.spin {
+  width: 26px; height: 26px; margin: 0 auto 16px;
+  border: 2px solid var(--border); border-top-color: var(--text);
+  border-radius: 50%; animation: spin .65s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.err-box {
+  font-size: 13px; margin-top: 16px; color: #c0392b;
+  background: rgba(192,57,43,.07); border: 1px solid rgba(192,57,43,.2);
+  border-radius: 8px; padding: 14px 18px; text-align: left;
+  word-break: break-all; line-height: 1.7;
+}
+
+/* ── VIEWER ── */
+#viewer {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(0,0,0,.95);
+  display: none; flex-direction: column;
+}
+#viewer.on { display: flex; }
+.v-bar {
+  background: var(--bg); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 20px; height: 54px; flex-shrink: 0;
+}
+.v-name { flex: 1; font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.v-btn {
+  padding: 6px 14px; border: 1px solid var(--border); border-radius: 7px;
+  font-size: 13px; color: var(--muted); transition: all .15s;
+}
+.v-btn:hover { background: var(--hover); color: var(--text); }
+#v-body {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+#v-body img { max-width: 100%; max-height: 100%; object-fit: contain; padding: 24px; display: block; }
+#v-body iframe { width: 100%; height: 100%; border: none; }
+.v-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+  color: #fff; font-size: 22px; padding: 12px 16px;
+  border-radius: 8px; transition: background .15s; z-index: 10;
+}
+.v-arrow:hover { background: rgba(255,255,255,.2); }
+#v-prev { left: 20px; } #v-next { right: 20px; }
+.v-arrow:disabled { opacity: .15; pointer-events: none; }
+#v-count {
+  position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%);
+  font-size: 12px; color: rgba(255,255,255,.4); pointer-events: none;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 780px) {
+  #ham { display: flex; }
+  #side { transform: translateX(-100%); }
+  #side.on { transform: translateX(0); }
+  #main { margin-left: 0; padding: 24px 18px 60px; }
+  .nav-links { display: none; }
+  .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+  .main-title { font-size: 19px; }
+  #v-prev { left: 10px; } #v-next { right: 10px; }
+}
+</style>
 </head>
-<body>
+<body class="dark">
 
-<!-- TOPBAR -->
-<nav id="topbar">
-  <button id="hamburger">☰</button>
-  <div class="brand" onclick="loadRoot()">UPSC<span>2027</span></div>
-  <div id="topnav">
-    <div class="tn-item" onclick="loadSection('prelims','GS')">PRELIMS<span class="caret">▾</span>
-      <div class="tn-dd">
+<!-- TOP NAV -->
+<nav id="nav">
+  <button class="icon-btn" id="ham">☰</button>
+  <div class="nav-brand" onclick="loadRoot()">UPSC<em>2027</em></div>
+
+  <div class="nav-links">
+    <!-- PRELIMS -->
+    <div class="nav-link" onclick="loadSection('prelims','GS')">
+      Prelims
+      <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="dropdown">
         <a onclick="loadSection('prelims','GS');event.stopPropagation()">GS</a>
         <a onclick="loadSection('prelims','CSAT');event.stopPropagation()">CSAT</a>
       </div>
     </div>
-    <div class="tn-item" onclick="loadSection('mains','GS4')">MAINS<span class="caret">▾</span>
-      <div class="tn-dd">
-        <a onclick="loadSection('mains','GS1');event.stopPropagation()">GS1</a>
-        <a onclick="loadSection('mains','GS2');event.stopPropagation()">GS2</a>
-        <a onclick="loadSection('mains','GS3');event.stopPropagation()">GS3</a>
-        <a onclick="loadSection('mains','GS4');event.stopPropagation()">GS4</a>
+    <!-- MAINS -->
+    <div class="nav-link" onclick="loadSection('mains','GS4')">
+      Mains
+      <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="dropdown">
+        <a onclick="loadSection('mains','GS1');event.stopPropagation()">GS 1</a>
+        <a onclick="loadSection('mains','GS2');event.stopPropagation()">GS 2</a>
+        <a onclick="loadSection('mains','GS3');event.stopPropagation()">GS 3</a>
+        <a onclick="loadSection('mains','GS4');event.stopPropagation()">GS 4</a>
         <a onclick="loadSection('mains','ESSAY');event.stopPropagation()">Essay</a>
         <a onclick="loadSection('mains','TELUGU');event.stopPropagation()">Telugu</a>
         <a onclick="loadSection('mains','ENGLISH');event.stopPropagation()">English</a>
       </div>
     </div>
-    <div class="tn-item" onclick="loadSection('interview','ROOT')">INTERVIEW</div>
-    <div class="tn-item" onclick="loadSection('subjects','ROOT')">SUBJECTS<span class="caret">▾</span>
-      <div class="tn-dd">
+    <!-- INTERVIEW -->
+    <div class="nav-link" onclick="loadSection('interview','ROOT')">Interview</div>
+    <!-- SUBJECTS -->
+    <div class="nav-link" onclick="loadSection('subjects','ROOT')">
+      Subjects
+      <svg viewBox="0 0 10 6"><path d="M1 1l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <div class="dropdown">
         <a onclick="loadSubject('POLITY');event.stopPropagation()">Polity</a>
         <a onclick="loadSubject('ECONOMY');event.stopPropagation()">Economy</a>
         <a onclick="loadSubject('GEOGRAPHY');event.stopPropagation()">Geography</a>
@@ -166,126 +368,126 @@
         <a onclick="loadSubject('INTERNAL SECURITY');event.stopPropagation()">Internal Security</a>
       </div>
     </div>
-    <div class="tn-item" onclick="loadSection('joplin','ROOT')">JOPLIN NOTES</div>
-    <div class="tn-item" onclick="loadSection('maths','ROOT')">MATHS OPTIONAL</div>
+    <div class="nav-link" onclick="loadSection('joplin','ROOT')">Joplin Notes</div>
+    <div class="nav-link" onclick="loadSection('maths','ROOT')">Maths Optional</div>
   </div>
-  <div id="tbright">
-    <button class="tbtn" id="themeBtn">☀️</button>
+
+  <div class="nav-right">
+    <button class="icon-btn" id="themeBtn" title="Toggle theme">🌙</button>
   </div>
 </nav>
 
-<!-- SUBNAV -->
-<div id="subnav"></div>
-<div id="overlay"></div>
+<!-- CONTEXT PILLS -->
+<div id="ctx"></div>
 
-<div id="layout">
+<div id="veil"></div>
+
+<div id="shell">
   <!-- SIDEBAR -->
-  <aside id="sidebar">
-    <div class="sb-section">
-      <div class="sb-label">Home</div>
-      <div class="sb-item" id="sb-root" onclick="loadRoot()">
-        <span class="sb-icon">🏠</span>All Files
+  <aside id="side">
+    <div class="side-group">
+      <div class="side-label">Home</div>
+      <div class="side-item" id="si-root" onclick="loadRoot()">
+        <span class="si">🏠</span> All Files
       </div>
     </div>
 
-    <div class="sb-section">
-      <div class="sb-label">Exam Stages</div>
-      <div class="sb-item" data-sec="prelims" onclick="toggleSb('prelims');loadSection('prelims','GS')">
-        <span class="sb-icon">📘</span>Prelims
+    <div class="side-group">
+      <div class="side-label">Exam</div>
+      <div class="side-item" data-s="prelims" onclick="sToggle('prelims'); loadSection('prelims','GS')">
+        <span class="si">📘</span> Prelims
       </div>
-      <div class="sb-sub" id="sb-prelims">
-        <div class="sb-item" onclick="loadSection('prelims','GS')">GS</div>
-        <div class="sb-item" onclick="loadSection('prelims','CSAT')">CSAT</div>
+      <div class="side-sub" id="ss-prelims">
+        <div class="side-item" onclick="loadSection('prelims','GS')">GS</div>
+        <div class="side-item" onclick="loadSection('prelims','CSAT')">CSAT</div>
       </div>
-      <div class="sb-item" data-sec="mains" onclick="toggleSb('mains');loadSection('mains','GS4')">
-        <span class="sb-icon">📗</span>Mains
+
+      <div class="side-item" data-s="mains" onclick="sToggle('mains'); loadSection('mains','GS4')">
+        <span class="si">📗</span> Mains
       </div>
-      <div class="sb-sub" id="sb-mains">
-        <div class="sb-item" onclick="loadSection('mains','GS1')">GS1</div>
-        <div class="sb-item" onclick="loadSection('mains','GS2')">GS2</div>
-        <div class="sb-item" onclick="loadSection('mains','GS3')">GS3</div>
-        <div class="sb-item" onclick="loadSection('mains','GS4')">GS4</div>
-        <div class="sb-item" onclick="loadSection('mains','ESSAY')">Essay</div>
-        <div class="sb-item" onclick="loadSection('mains','TELUGU')">Telugu</div>
-        <div class="sb-item" onclick="loadSection('mains','ENGLISH')">English</div>
+      <div class="side-sub" id="ss-mains">
+        <div class="side-item" onclick="loadSection('mains','GS1')">GS 1</div>
+        <div class="side-item" onclick="loadSection('mains','GS2')">GS 2</div>
+        <div class="side-item" onclick="loadSection('mains','GS3')">GS 3</div>
+        <div class="side-item" onclick="loadSection('mains','GS4')">GS 4</div>
+        <div class="side-item" onclick="loadSection('mains','ESSAY')">Essay</div>
+        <div class="side-item" onclick="loadSection('mains','TELUGU')">Telugu</div>
+        <div class="side-item" onclick="loadSection('mains','ENGLISH')">English</div>
       </div>
-      <div class="sb-item" data-sec="interview" onclick="loadSection('interview','ROOT')">
-        <span class="sb-icon">🎙️</span>Interview
+
+      <div class="side-item" data-s="interview" onclick="loadSection('interview','ROOT')">
+        <span class="si">🎙️</span> Interview
       </div>
     </div>
 
-    <div class="sb-section">
-      <div class="sb-label">Resources</div>
-      <div class="sb-item" data-sec="subjects" onclick="toggleSb('subjects');loadSection('subjects','ROOT')">
-        <span class="sb-icon">📚</span>Subjects
+    <div class="side-group">
+      <div class="side-label">Resources</div>
+      <div class="side-item" data-s="subjects" onclick="sToggle('subjects'); loadSection('subjects','ROOT')">
+        <span class="si">📚</span> Subjects
       </div>
-      <div class="sb-sub" id="sb-subjects">
-        <div class="sb-item" onclick="loadSubject('POLITY')">Polity</div>
-        <div class="sb-item" onclick="loadSubject('ECONOMY')">Economy</div>
-        <div class="sb-item" onclick="loadSubject('GEOGRAPHY')">Geography</div>
-        <div class="sb-item" onclick="loadSubject('HISTORY')">History</div>
-        <div class="sb-item" onclick="loadSubject('ENVIRONMENT')">Environment</div>
-        <div class="sb-item" onclick="loadSubject('CURRENT EVENTS')">Current Events</div>
-        <div class="sb-item" onclick="loadSubject('SCIENCE AND TECHNOLOGY')">Science & Tech</div>
-        <div class="sb-item" onclick="loadSubject('ART AND CULTURE')">Art & Culture</div>
-        <div class="sb-item" onclick="loadSubject('INDIAN SOCIETY')">Indian Society</div>
-        <div class="sb-item" onclick="loadSubject('GOVERNANCE')">Governance</div>
-        <div class="sb-item" onclick="loadSubject('INTERNATIONAL RELATIONS')">Intl. Relations</div>
-        <div class="sb-item" onclick="loadSubject('DISASTER MANAGEMENT')">Disaster Mgmt</div>
-        <div class="sb-item" onclick="loadSubject('INTERNAL SECURITY')">Internal Security</div>
+      <div class="side-sub" id="ss-subjects">
+        <div class="side-item" onclick="loadSubject('POLITY')">Polity</div>
+        <div class="side-item" onclick="loadSubject('ECONOMY')">Economy</div>
+        <div class="side-item" onclick="loadSubject('GEOGRAPHY')">Geography</div>
+        <div class="side-item" onclick="loadSubject('HISTORY')">History</div>
+        <div class="side-item" onclick="loadSubject('ENVIRONMENT')">Environment</div>
+        <div class="side-item" onclick="loadSubject('CURRENT EVENTS')">Current Events</div>
+        <div class="side-item" onclick="loadSubject('SCIENCE AND TECHNOLOGY')">Science & Tech</div>
+        <div class="side-item" onclick="loadSubject('ART AND CULTURE')">Art & Culture</div>
+        <div class="side-item" onclick="loadSubject('INDIAN SOCIETY')">Indian Society</div>
+        <div class="side-item" onclick="loadSubject('GOVERNANCE')">Governance</div>
+        <div class="side-item" onclick="loadSubject('INTERNATIONAL RELATIONS')">Intl. Relations</div>
+        <div class="side-item" onclick="loadSubject('DISASTER MANAGEMENT')">Disaster Mgmt</div>
+        <div class="side-item" onclick="loadSubject('INTERNAL SECURITY')">Internal Security</div>
       </div>
-      <div class="sb-item" data-sec="joplin" onclick="loadSection('joplin','ROOT')">
-        <span class="sb-icon">📓</span>Joplin Notes
+
+      <div class="side-item" data-s="joplin" onclick="loadSection('joplin','ROOT')">
+        <span class="si">📓</span> Joplin Notes
       </div>
-      <div class="sb-item" data-sec="maths" onclick="loadSection('maths','ROOT')">
-        <span class="sb-icon">📐</span>Maths Optional
+      <div class="side-item" data-s="maths" onclick="loadSection('maths','ROOT')">
+        <span class="si">📐</span> Maths Optional
       </div>
     </div>
   </aside>
 
-  <!-- MAIN -->
+  <!-- MAIN CONTENT -->
   <main id="main">
-    <div class="page-header">
-      <div>
-        <div class="page-title" id="pageTitle">All Files</div>
-        <div class="page-sub" id="pageSub">Your complete Drive library</div>
-      </div>
-      <div class="view-toggle">
-        <button class="vbtn on" id="gridBtn" title="Grid">⊞</button>
-        <button class="vbtn" id="listBtn" title="List">☰</button>
+    <div class="main-head">
+      <div class="main-title" id="title">All Files</div>
+      <div class="view-btns">
+        <button class="vb on" id="gb" title="Grid view">⊞</button>
+        <button class="vb" id="lb" title="List view">☰</button>
       </div>
     </div>
-    <div class="breadcrumb" id="breadcrumb"></div>
+    <div class="crumbs" id="crumbs"></div>
     <div id="files">
-      <div class="state"><div class="spinner"></div>Loading your Drive…</div>
+      <div class="state"><div class="spin"></div>Loading…</div>
     </div>
   </main>
 </div>
 
 <!-- VIEWER -->
 <div id="viewer">
-  <div class="vbar">
-    <button class="vbar-btn" id="closeViewer">✕ Close</button>
-    <span class="vbar-name" id="vname"></span>
-    <a class="vbar-btn" id="vdrivelink" href="#" target="_blank">↗ Open in Drive</a>
+  <div class="v-bar">
+    <button class="v-btn" id="v-close">✕ Close</button>
+    <span class="v-name" id="v-name"></span>
+    <a class="v-btn" id="v-link" href="#" target="_blank">↗ Drive</a>
   </div>
-  <div id="vcontent">
-    <button class="nav-arrow" id="prevBtn" disabled>‹</button>
-    <button class="nav-arrow" id="nextBtn" disabled>›</button>
-    <div class="img-counter" id="imgCounter"></div>
+  <div id="v-body">
+    <button class="v-arrow" id="v-prev" disabled>‹</button>
+    <button class="v-arrow" id="v-next" disabled>›</button>
+    <div id="v-count"></div>
   </div>
 </div>
 
 <script>
-/* ══════════════════════════════════════
-   CONFIG
-══════════════════════════════════════ */
-const API_KEY = "AIzaSyAGL2uXdY9SSz3ROPm0vjYdLzy2wGh4ryc";
-const ROOT_ID = "1jL6z2VKzFhklPVzXLe2W6dSXOY5GmI0T";
+/* ══ CONFIG ══ */
+const KEY = "AIzaSyAGL2uXdY9SSz3ROPm0vjYdLzy2wGh4ryc";
+const ROOT = "1jL6z2VKzFhklPVzXLe2W6dSXOY5GmI0T";
 
 const FOLDERS = {
   prelims:   { GS:"1B0UInKhvD3qgsW3Tcnj6KBo-LnkUIacS", CSAT:"14_cjaMTUGZauYi4AQVfRt0jzXcmbNCfJ" },
-  mains:     { GS1:null, GS2:null, GS3:null,
+  mains:     { GS1:null,GS2:null,GS3:null,
                GS4:"1lA2CMXBwEmdfB358YeqB9vGX0H0h-xBo",
                ESSAY:"12w1BlvoIkApqoKXoJW5sX0e-p2HsVjAq",
                TELUGU:"1qFksmqvlf0hODfdXWi7MTQMY2h94slZF",
@@ -296,7 +498,7 @@ const FOLDERS = {
   maths:     { ROOT:"1bYTlCn4rCmMLTh3zqT-zIa2Gq7f0BmbP" }
 };
 
-const SUBJECT_IDS = {
+const SUBJECTS = {
   "POLITY":"1zXApr5zupmzjELuoZprUgPGMHdRdZeTk",
   "ECONOMY":"1pIepNvOoAV5_j35Wp5eebhLbU1TZRmar",
   "GEOGRAPHY":"1PRAmBI7TGG9oGGsdBxqqOtNTc_SZpSL6",
@@ -312,12 +514,22 @@ const SUBJECT_IDS = {
   "INTERNAL SECURITY":"18onP2DQEXOTLarvYDnzqWJJ_DUOE3tIs"
 };
 
+const CTX = {
+  prelims:  [{l:"GS",s:"GS"},{l:"CSAT",s:"CSAT"}],
+  mains:    [{l:"GS 1",s:"GS1"},{l:"GS 2",s:"GS2"},{l:"GS 3",s:"GS3"},
+             {l:"GS 4",s:"GS4"},{l:"Essay",s:"ESSAY"},{l:"Telugu",s:"TELUGU"},{l:"English",s:"ENGLISH"}],
+  subjects: Object.keys(SUBJECTS).map(k=>({l:k[0]+k.slice(1).toLowerCase(),s:k})),
+  interview:[],joplin:[],maths:[]
+};
+
+const SEC_LABEL = {prelims:"Prelims",mains:"Mains",interview:"Interview",
+                   subjects:"Subjects",joplin:"Joplin Notes",maths:"Maths Optional"};
+
 /* ══ State ══ */
-let view = "grid", trail = [], curSec = "", curSub = "";
-let imgFiles = [], imgIdx = 0;
+let vMode="grid", trail=[], sec="", sub="", imgs=[], iIdx=0;
 
 /* ══ Icons ══ */
-const iconFor = m => {
+const ico = m=>{
   if(m==="application/vnd.google-apps.folder") return "📁";
   if(m.includes("pdf"))    return "📄";
   if(m.includes("image"))  return "🖼";
@@ -328,7 +540,7 @@ const iconFor = m => {
   if(m.includes("document")||m.includes("word")) return "📝";
   return "📎";
 };
-const typeFor = m => {
+const lbl = m=>{
   if(m==="application/vnd.google-apps.folder") return "Folder";
   if(m.includes("pdf"))    return "PDF";
   if(m.includes("image"))  return "Image";
@@ -340,268 +552,231 @@ const typeFor = m => {
   return "File";
 };
 
-/* ══ Drive API ══ */
-async function driveList(folderId) {
-  const q = encodeURIComponent(`'${folderId}' in parents and trashed=false`);
+/* ══ API ══ */
+async function api(id) {
+  const q = encodeURIComponent(`'${id}' in parents and trashed=false`);
   const f = encodeURIComponent("files(id,name,mimeType)");
-  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=folder%2Cname&fields=${f}&key=${API_KEY}`;
-  const res = await fetch(url, { headers:{ Accept:"application/json" } });
-  if (!res.ok) {
-    const err = await res.json().catch(()=>({}));
-    throw new Error(err?.error?.message || `HTTP ${res.status}`);
-  }
-  return res.json();
+  const r = await fetch(`https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=folder%2Cname&fields=${f}&key=${KEY}`);
+  if(!r.ok){ const e=await r.json().catch(()=>({})); throw new Error(e?.error?.message||`HTTP ${r.status}`); }
+  return r.json();
 }
 
 /* ══ Render ══ */
-function renderFiles(files) {
+function render(files) {
   const el = document.getElementById("files");
   el.innerHTML = "";
-  if (!files?.length) { el.innerHTML=`<div class="state">📂 This folder is empty.</div>`; return; }
+  if(!files?.length){ el.innerHTML=`<div class="state"><div class="state-icon">📂</div>This folder is empty.</div>`; return; }
 
-  imgFiles = files.filter(f => f.mimeType.includes("image"));
-  const wrap = document.createElement("div");
-  wrap.className = view==="grid" ? "grid" : "list";
+  imgs = files.filter(f=>f.mimeType.includes("image"));
 
-  files.forEach(f => {
-    const isFolder = f.mimeType==="application/vnd.google-apps.folder";
-    const item = document.createElement("div");
-    item.className = view==="grid" ? "card" : "row";
-    item.innerHTML = view==="grid"
-      ? `<div class="c-icon">${iconFor(f.mimeType)}</div>
-         <div class="c-name">${f.name}</div>
-         <div class="c-type">${typeFor(f.mimeType)}</div>`
-      : `<span class="c-icon">${iconFor(f.mimeType)}</span>
-         <span class="c-name">${f.name}</span>
-         <span class="c-type">${typeFor(f.mimeType)}</span>
-         <span class="c-chev">${isFolder?"›":""}</span>`;
-    item.onclick = isFolder ? ()=>drillInto(f.id, f.name) : ()=>openFile(f);
-    wrap.appendChild(item);
-  });
-  el.appendChild(wrap);
-}
-
-/* ══ Fetch & render ══ */
-async function fetchAndRender(folderId) {
-  document.getElementById("files").innerHTML = `<div class="state"><div class="spinner"></div>Loading…</div>`;
-  try {
-    const data = await driveList(folderId);
-    renderFiles(data.files);
-  } catch(e) {
-    document.getElementById("files").innerHTML = `
-      <div class="state">⚠️ Could not load files.
-        <div class="err"><b>Error:</b> ${e.message}<br><br>
-          <b>Fix checklist:</b><br>
-          1. Right-click folder in Drive → Share → <b>"Anyone with the link"</b><br>
-          2. Enable <b>Google Drive API</b> in Google Cloud Console<br>
-          3. API key must have no HTTP referrer restrictions blocking this domain
-        </div>
-      </div>`;
+  if(vMode==="grid") {
+    const g = document.createElement("div"); g.className="grid";
+    files.forEach(f=>{
+      const d=document.createElement("div"); d.className="file-card";
+      d.innerHTML=`<div class="fc-icon">${ico(f.mimeType)}</div>
+                   <div class="fc-name">${f.name}</div>
+                   <div class="fc-type">${lbl(f.mimeType)}</div>`;
+      d.onclick=()=>f.mimeType==="application/vnd.google-apps.folder"?drill(f.id,f.name):open(f);
+      g.appendChild(d);
+    });
+    el.appendChild(g);
+  } else {
+    const l=document.createElement("div"); l.className="flist";
+    files.forEach((f,i)=>{
+      const isF=f.mimeType==="application/vnd.google-apps.folder";
+      const r=document.createElement("div"); r.className="file-row";
+      r.innerHTML=`<span class="fr-icon">${ico(f.mimeType)}</span>
+                   <span class="fr-name">${f.name}</span>
+                   <span class="fr-type">${lbl(f.mimeType)}</span>
+                   <span class="fr-arrow">${isF?"›":""}</span>`;
+      r.onclick=()=>isF?drill(f.id,f.name):open(f);
+      l.appendChild(r);
+      if(i<files.length-1){ const hr=document.createElement("div"); hr.className="flist-divider"; l.appendChild(hr); }
+    });
+    el.appendChild(l);
   }
-  updateBreadcrumb();
 }
 
-/* ══ Root ══ */
+async function go(id) {
+  document.getElementById("files").innerHTML=`<div class="state"><div class="spin"></div>Loading…</div>`;
+  try{ const d=await api(id); render(d.files); }
+  catch(e){
+    document.getElementById("files").innerHTML=`<div class="state">
+      ⚠️ Could not load files.
+      <div class="err-box"><b>Error:</b> ${e.message}<br><br>
+        <b>Checklist:</b><br>
+        1. Drive folder → Share → <b>"Anyone with the link"</b><br>
+        2. Enable Google Drive API in Cloud Console<br>
+        3. No HTTP referrer restrictions on API key
+      </div></div>`;
+  }
+  crumbs();
+}
+
+/* ══ Navigation ══ */
 function loadRoot() {
-  curSec = "root"; curSub = "";
-  trail = [{ id: ROOT_ID, name: "All Files" }];
-  document.getElementById("pageTitle").textContent = "All Files";
-  document.getElementById("pageSub").textContent = "Your complete Drive library";
-  document.getElementById("subnav").innerHTML = "";
-  highlightSb(null);
-  document.getElementById("sb-root").classList.add("active");
-  closeMobile();
-  fetchAndRender(ROOT_ID);
+  sec=""; sub=""; trail=[{id:ROOT,name:"All Files"}];
+  document.getElementById("title").textContent="All Files";
+  ctx(""); highlight(null);
+  document.getElementById("si-root").classList.add("on");
+  closeMobile(); go(ROOT);
 }
 
-/* ══ Section ══ */
-async function loadSection(sec, sub) {
-  curSec=sec; curSub=sub; trail=[];
-  const labels = {prelims:"Prelims",mains:"Mains",interview:"Interview",
-                  subjects:"Subjects",joplin:"Joplin Notes",maths:"Maths Optional"};
-  const id = FOLDERS[sec]?.[sub];
-
-  document.getElementById("pageTitle").textContent = labels[sec]||sec;
-  document.getElementById("pageSub").textContent = sub==="ROOT" ? "" : sub;
-  updateSubnav(sec);
-  highlightSb(sec);
-  closeMobile();
-
-  if (!id) {
-    document.getElementById("files").innerHTML =
-      `<div class="state">📂 <b>${sub}</b> — folder ID not added yet.<br>
-       <span style="font-size:12px;opacity:.6">Paste the Drive folder ID in the FOLDERS config.</span></div>`;
-    updateBreadcrumb(); return;
+function loadSection(s,sb) {
+  sec=s; sub=sb; trail=[];
+  const id=FOLDERS[s]?.[sb];
+  document.getElementById("title").textContent=SEC_LABEL[s]||s;
+  ctx(s); highlight(s); closeMobile();
+  if(!id){
+    document.getElementById("files").innerHTML=
+      `<div class="state"><div class="state-icon">📂</div><b>${sb}</b> — folder ID not set yet.</div>`;
+    crumbs(); return;
   }
-  trail.push({ id, name: sub==="ROOT" ? labels[sec] : sub });
-  await fetchAndRender(id);
+  trail=[{id,name:sb==="ROOT"?SEC_LABEL[s]:sb}];
+  go(id);
 }
 
-function drillInto(id, name) {
-  trail.push({ id, name });
-  fetchAndRender(id);
-}
-
-function jumpTo(i) {
-  trail = trail.slice(0, i+1);
-  fetchAndRender(trail[trail.length-1].id);
-}
-
-/* ══ Subjects ══ */
 function loadSubject(name) {
-  curSec="subjects"; curSub=name;
-  const id = SUBJECT_IDS[name];
-  document.getElementById("pageTitle").textContent = name;
-  document.getElementById("pageSub").textContent = "Subjects";
-  updateSubnav("subjects");
-  highlightSb("subjects");
-  closeMobile();
-  trail = [{ id, name }];
-  if (!id) {
-    document.getElementById("files").innerHTML =
-      `<div class="state">📂 <b>${name}</b> — folder ID not added yet.</div>`;
-    updateBreadcrumb(); return;
+  sec="subjects"; sub=name;
+  const id=SUBJECTS[name];
+  document.getElementById("title").textContent=name[0]+name.slice(1).toLowerCase();
+  ctx("subjects"); highlight("subjects"); closeMobile();
+  trail=[{id,name:name[0]+name.slice(1).toLowerCase()}];
+  if(!id){
+    document.getElementById("files").innerHTML=
+      `<div class="state"><div class="state-icon">📂</div><b>${name}</b> — folder ID not set yet.</div>`;
+    crumbs(); return;
   }
-  fetchAndRender(id);
+  go(id);
 }
 
-/* ══ Subnav ══ */
-const SUBNAV = {
-  prelims:   [{l:"GS",s:"GS"},{l:"CSAT",s:"CSAT"}],
-  mains:     [{l:"GS1",s:"GS1"},{l:"GS2",s:"GS2"},{l:"GS3",s:"GS3"},
-              {l:"GS4",s:"GS4"},{l:"Essay",s:"ESSAY"},{l:"Telugu",s:"TELUGU"},{l:"English",s:"ENGLISH"}],
-  interview:[], joplin:[], maths:[],
-  subjects: Object.keys(SUBJECT_IDS).map(k=>({l:k,s:k}))
-};
-function updateSubnav(sec) {
-  const sn = document.getElementById("subnav");
-  sn.innerHTML = "";
-  (SUBNAV[sec]||[]).forEach(item => {
-    const p = document.createElement("button");
-    p.className = "sn-pill" + (item.s===curSub ? " active" : "");
-    p.textContent = item.l;
-    p.onclick = sec==="subjects" ? ()=>loadSubject(item.s) : ()=>loadSection(sec,item.s);
-    sn.appendChild(p);
+function drill(id,name){ trail.push({id,name}); go(id); }
+function jump(i){ trail=trail.slice(0,i+1); go(trail[trail.length-1].id); }
+
+/* ══ Context pills ══ */
+function ctx(s) {
+  const el=document.getElementById("ctx");
+  el.innerHTML="";
+  const items=CTX[s]||[];
+  items.forEach(it=>{
+    const p=document.createElement("button"); p.className="ctx-pill";
+    if(it.s===sub) p.classList.add("on");
+    p.textContent=it.l;
+    p.onclick=s==="subjects"?()=>loadSubject(it.s):()=>loadSection(s,it.s);
+    el.appendChild(p);
   });
+  // adjust layout top based on ctx height
+  const h=items.length?44:0;
+  document.getElementById("shell").style.paddingTop=`calc(var(--nav-h) + ${h}px)`;
+  document.getElementById("side").style.top=`calc(var(--nav-h) + ${h}px)`;
+  document.getElementById("ctx").style.height=items.length?`44px`:`0`;
 }
 
-/* ══ Breadcrumb ══ */
-function updateBreadcrumb() {
-  const bc = document.getElementById("breadcrumb");
-  bc.innerHTML = trail.map((c,i) => {
-    const last = i===trail.length-1;
-    return last
-      ? `<span class="cur">${c.name}</span>`
-      : `<span onclick="jumpTo(${i})">${c.name}</span><span class="sep"> / </span>`;
+/* ══ Breadcrumbs ══ */
+function crumbs() {
+  const el=document.getElementById("crumbs");
+  el.innerHTML=trail.map((c,i)=>{
+    const last=i===trail.length-1;
+    return last?`<span class="here">${c.name}</span>`
+               :`<span onclick="jump(${i})">${c.name}</span><span class="sep"> / </span>`;
   }).join("");
 }
 
-/* ══ Sidebar ══ */
-function highlightSb(sec) {
-  document.querySelectorAll(".sb-item").forEach(e=>e.classList.remove("active"));
-  if(sec) document.querySelector(`.sb-item[data-sec="${sec}"]`)?.classList.add("active");
-  ["prelims","mains","subjects"].forEach(s=>{
-    const el=document.getElementById(`sb-${s}`);
-    if(el) el.style.display = s===sec ? "block":"none";
+/* ══ Sidebar highlight ══ */
+function highlight(s) {
+  document.querySelectorAll(".side-item").forEach(e=>e.classList.remove("on"));
+  document.getElementById("si-root").classList.remove("on");
+  if(s) document.querySelector(`.side-item[data-s="${s}"]`)?.classList.add("on");
+  ["prelims","mains","subjects"].forEach(k=>{
+    const el=document.getElementById(`ss-${k}`);
+    if(el) el.style.display=k===s?"block":"none";
   });
 }
-function toggleSb(sec) {
-  const el=document.getElementById(`sb-${sec}`);
-  if(el) el.style.display = el.style.display==="block"?"none":"block";
+function sToggle(s) {
+  const el=document.getElementById(`ss-${s}`);
+  if(el) el.style.display=el.style.display==="block"?"none":"block";
 }
 
 /* ══ Viewer ══ */
-function openFile(f) {
-  if(f.mimeType.includes("image")) {
-    imgIdx = imgFiles.findIndex(x=>x.id===f.id);
-    showImg();
-  } else {
-    loadViewer(f, false);
-  }
+function open(f) {
+  if(f.mimeType.includes("image")){ iIdx=imgs.findIndex(x=>x.id===f.id); showImg(); }
+  else showFile(f,false);
 }
-function showImg() {
-  const f=imgFiles[imgIdx]; if(f) loadViewer(f,true);
-}
-function loadViewer(f, isImg) {
-  const content=document.getElementById("vcontent");
-  content.querySelectorAll("img,iframe").forEach(e=>e.remove());
-  document.getElementById("vname").textContent = f.name;
-  document.getElementById("vdrivelink").href = `https://drive.google.com/file/d/${f.id}/view`;
-  const prev=document.getElementById("prevBtn"), next=document.getElementById("nextBtn");
+function showImg(){ const f=imgs[iIdx]; if(f) showFile(f,true); }
+function showFile(f,isImg){
+  const body=document.getElementById("v-body");
+  body.querySelectorAll("img,iframe").forEach(e=>e.remove());
+  document.getElementById("v-name").textContent=f.name;
+  document.getElementById("v-link").href=`https://drive.google.com/file/d/${f.id}/view`;
+  const pv=document.getElementById("v-prev"), nx=document.getElementById("v-next");
 
-  if(isImg) {
-    const img=document.createElement("img");
-    let attempt=0;
-    const srcs=[
-      `https://lh3.googleusercontent.com/d/${f.id}=w2000`,
-      `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`,
-      `https://drive.google.com/uc?export=view&id=${f.id}`
-    ];
-    img.onerror=()=>{ attempt++; if(attempt<srcs.length) img.src=srcs[attempt]; };
-    img.src=srcs[0];
-    content.appendChild(img);
-    prev.style.display=""; next.style.display="";
-    prev.disabled=imgIdx===0; next.disabled=imgIdx===imgFiles.length-1;
-    document.getElementById("imgCounter").textContent =
-      imgFiles.length>1 ? `${imgIdx+1} / ${imgFiles.length}` : "";
+  if(isImg){
+    const img=document.createElement("img"); let att=0;
+    const srcs=[`https://lh3.googleusercontent.com/d/${f.id}=w2000`,
+                `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`,
+                `https://drive.google.com/uc?export=view&id=${f.id}`];
+    img.onerror=()=>{ att++; if(att<srcs.length) img.src=srcs[att]; };
+    img.src=srcs[0]; body.appendChild(img);
+    pv.style.display=""; nx.style.display="";
+    pv.disabled=iIdx===0; nx.disabled=iIdx===imgs.length-1;
+    document.getElementById("v-count").textContent=imgs.length>1?`${iIdx+1} / ${imgs.length}`:"";
   } else {
-    const iframe=document.createElement("iframe");
-    iframe.src=`https://drive.google.com/file/d/${f.id}/preview`;
-    iframe.allow="autoplay"; iframe.allowFullscreen=true;
-    content.appendChild(iframe);
-    prev.style.display="none"; next.style.display="none";
-    document.getElementById("imgCounter").textContent="";
+    const fr=document.createElement("iframe");
+    fr.src=`https://drive.google.com/file/d/${f.id}/preview`;
+    fr.allow="autoplay"; body.appendChild(fr);
+    pv.style.display="none"; nx.style.display="none";
+    document.getElementById("v-count").textContent="";
   }
   document.getElementById("viewer").classList.add("on");
 }
 
-document.getElementById("prevBtn").onclick=()=>{if(imgIdx>0){imgIdx--;showImg();}};
-document.getElementById("nextBtn").onclick=()=>{if(imgIdx<imgFiles.length-1){imgIdx++;showImg();}};
-document.getElementById("closeViewer").onclick=()=>{
+document.getElementById("v-prev").onclick=()=>{if(iIdx>0){iIdx--;showImg();}};
+document.getElementById("v-next").onclick=()=>{if(iIdx<imgs.length-1){iIdx++;showImg();}};
+document.getElementById("v-close").onclick=()=>{
   document.getElementById("viewer").classList.remove("on");
-  document.getElementById("vcontent").querySelectorAll("img,iframe").forEach(e=>e.remove());
+  document.getElementById("v-body").querySelectorAll("img,iframe").forEach(e=>e.remove());
 };
 document.addEventListener("keydown",e=>{
   if(!document.getElementById("viewer").classList.contains("on")) return;
-  if(e.key==="ArrowLeft") document.getElementById("prevBtn").click();
-  if(e.key==="ArrowRight") document.getElementById("nextBtn").click();
-  if(e.key==="Escape") document.getElementById("closeViewer").click();
+  if(e.key==="ArrowLeft") document.getElementById("v-prev").click();
+  if(e.key==="ArrowRight") document.getElementById("v-next").click();
+  if(e.key==="Escape") document.getElementById("v-close").click();
 });
 
 /* ══ View toggle ══ */
-document.getElementById("gridBtn").onclick=()=>{
-  view="grid";
-  document.getElementById("gridBtn").classList.add("on");
-  document.getElementById("listBtn").classList.remove("on");
-  if(trail.length) fetchAndRender(trail[trail.length-1].id);
+document.getElementById("gb").onclick=()=>{
+  vMode="grid";
+  document.getElementById("gb").classList.add("on");
+  document.getElementById("lb").classList.remove("on");
+  if(trail.length) go(trail[trail.length-1].id);
 };
-document.getElementById("listBtn").onclick=()=>{
-  view="list";
-  document.getElementById("listBtn").classList.add("on");
-  document.getElementById("gridBtn").classList.remove("on");
-  if(trail.length) fetchAndRender(trail[trail.length-1].id);
+document.getElementById("lb").onclick=()=>{
+  vMode="list";
+  document.getElementById("lb").classList.add("on");
+  document.getElementById("gb").classList.remove("on");
+  if(trail.length) go(trail[trail.length-1].id);
 };
 
 /* ══ Theme ══ */
 document.getElementById("themeBtn").onclick=()=>{
-  document.body.classList.toggle("light");
-  document.getElementById("themeBtn").textContent =
-    document.body.classList.contains("light") ? "🌙":"☀️";
+  document.body.classList.toggle("dark");
+  document.getElementById("themeBtn").textContent=
+    document.body.classList.contains("dark")?"🌙":"☀️";
 };
 
 /* ══ Mobile ══ */
-document.getElementById("hamburger").onclick=()=>{
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("overlay").classList.toggle("show");
+document.getElementById("ham").onclick=()=>{
+  document.getElementById("side").classList.toggle("on");
+  document.getElementById("veil").classList.toggle("on");
 };
-document.getElementById("overlay").onclick=closeMobile;
+document.getElementById("veil").onclick=closeMobile;
 function closeMobile(){
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("overlay").classList.remove("show");
+  document.getElementById("side").classList.remove("on");
+  document.getElementById("veil").classList.remove("on");
 }
 
-/* ══ Init — load root on start ══ */
-loadRoot();
+/* ══ Init ══ */
+ctx(""); loadRoot();
 </script>
 </body>
 </html>
