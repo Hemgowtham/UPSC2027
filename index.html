@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Drive</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Variables ── */
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --text: #f0f0f0;
+      --sub: #777;
+      --hover: #1f1f1f;
+      --accent: #f0f0f0;
+      --r: 8px;
+    }
+    body.light {
+      --bg: #fafafa;
+      --surface: #ffffff;
+      --border: #e8e8e8;
+      --text: #111;
+      --sub: #888;
+      --hover: #f2f2f2;
+      --accent: #111;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background .2s, color .2s;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Topbar ── */
+    header {
+      position: sticky; top: 0; z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 20px; height: 54px; gap: 12px;
+    }
+    .logo { font-size: 15px; font-weight: 600; flex: 1; letter-spacing: -0.2px; }
+
+    /* ── Buttons ── */
+    btn, .btn {
+      all: unset;
+      display: inline-flex; align-items: center; gap: 6px;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      font-size: 13px; font-weight: 500;
+      color: var(--text); padding: 6px 12px;
+      border: 1px solid var(--border); border-radius: var(--r);
+      transition: background .15s, border-color .15s;
+      white-space: nowrap;
+    }
+    .btn:hover { background: var(--hover); }
+    .btn:disabled { opacity: .3; pointer-events: none; }
+    .btn-icon { padding: 6px 10px; font-size: 16px; }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      display: flex; align-items: center; flex-wrap: wrap;
+      gap: 4px; padding: 12px 20px 0;
+      font-size: 12px; color: var(--sub);
+    }
+    .breadcrumb span { cursor: pointer; transition: color .15s; }
+    .breadcrumb span:hover { color: var(--text); }
+    .breadcrumb .cur { color: var(--text); font-weight: 500; cursor: default; }
+    .breadcrumb .sep { opacity: .3; }
+
+    /* ── Toolbar ── */
+    .toolbar {
+      display: flex; align-items: center; gap: 8px;
+      padding: 14px 20px 8px;
+    }
+    .folder-title { font-size: 18px; font-weight: 600; flex: 1; letter-spacing: -0.3px; }
+
+    /* ── File List ── */
+    #files { padding: 0 20px 60px; }
+
+    .file-row {
+      display: flex; align-items: center; gap: 14px;
+      padding: 13px 14px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      border-radius: var(--r);
+      transition: background .15s;
+    }
+    .file-row:hover { background: var(--hover); }
+
+    .file-emoji { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
+
+    .file-info { flex: 1; min-width: 0; }
+    .file-name {
+      font-size: 14px; font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+    .file-meta { font-size: 11px; color: var(--sub); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .file-chevron { color: var(--sub); font-size: 14px; flex-shrink: 0; }
+
+    /* ── States ── */
+    .state {
+      text-align: center; padding: 60px 20px;
+      color: var(--sub); font-size: 14px;
+    }
+    .spinner {
+      width: 26px; height: 26px;
+      border: 2px solid var(--border);
+      border-top-color: var(--text);
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Viewer ── */
+    #viewer {
+      position: fixed; inset: 0; z-index: 200;
+      background: var(--bg);
+      display: none; flex-direction: column;
+    }
+    #viewer.active { display: flex; }
+
+    .viewer-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px;
+      padding: 0 16px; height: 52px; flex-shrink: 0;
+    }
+    .viewer-name {
+      flex: 1; font-size: 13px; font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    #viewerContent {
+      flex: 1; display: flex;
+      align-items: center; justify-content: center;
+      overflow: hidden; background: var(--bg);
+    }
+    #viewerContent iframe {
+      width: 100%; height: 100%; border: none; display: block;
+    }
+    #viewerContent img {
+      max-width: 100%; max-height: 100%;
+      object-fit: contain; display: block;
+      padding: 16px;
+    }
+
+    /* ── Theme icon ── */
+    #themeBtn { font-size: 17px; padding: 4px 8px; border: none; background: transparent; cursor: pointer; }
+
+    /* ── Mobile tweaks ── */
+    @media (max-width: 480px) {
+      header { padding: 0 14px; }
+      .breadcrumb, .toolbar, #files { padding-left: 14px; padding-right: 14px; }
+      .folder-title { font-size: 16px; }
+      .viewer-bar { padding: 0 12px; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <span class="logo">My Drive</span>
+    <button class="btn" id="backBtn" disabled>← Back</button>
+    <button id="themeBtn">☀️</button>
+  </header>
+
+  <div class="breadcrumb" id="breadcrumb"></div>
+
+  <div class="toolbar">
+    <span class="folder-title" id="folderTitle">All Files</span>
+  </div>
+
+  <div id="files"></div>
+
+  <!-- Viewer -->
+  <div id="viewer">
+    <div class="viewer-bar">
+      <button class="btn" id="closeViewer">✕</button>
+      <span class="viewer-name" id="viewerName"></span>
+      <a class="btn" id="driveLink" href="#" target="_blank">Open ↗</a>
+    </div>
+    <div id="viewerContent"></div>
+  </div>
+
+  <script>
+    const API_KEY = "AIzaSyAGL2uXdY9SSz3ROPm0vjYdLzy2wGh4ryc";
+    const ROOT_ID = "1jL6z2VKzFhklPVzXLe2W6dSXOY5GmI0T";
+
+    let trail = [{ id: ROOT_ID, name: "My Drive" }];
+
+    /* ─ Icons ─ */
+    function icon(mime) {
+      if (mime === "application/vnd.google-apps.folder") return "📁";
+      if (mime.includes("pdf"))          return "📄";
+      if (mime.includes("image"))        return "🖼";
+      if (mime.includes("video"))        return "🎬";
+      if (mime.includes("audio"))        return "🎵";
+      if (mime.includes("spreadsheet") || mime.includes("excel")) return "📊";
+      if (mime.includes("presentation")) return "📑";
+      if (mime.includes("document") || mime.includes("word"))     return "📝";
+      return "📎";
+    }
+    function label(mime) {
+      if (mime === "application/vnd.google-apps.folder") return "Folder";
+      if (mime.includes("pdf"))          return "PDF";
+      if (mime.includes("image"))        return "Image";
+      if (mime.includes("video"))        return "Video";
+      if (mime.includes("audio"))        return "Audio";
+      if (mime.includes("spreadsheet") || mime.includes("excel")) return "Spreadsheet";
+      if (mime.includes("presentation")) return "Presentation";
+      if (mime.includes("document") || mime.includes("word"))     return "Document";
+      return "File";
+    }
+
+    /* ─ Load ─ */
+    async function load(id) {
+      const el = document.getElementById("files");
+      el.innerHTML = `<div class="state"><div class="spinner"></div>Loading…</div>`;
+
+      try {
+        const url = `https://www.googleapis.com/drive/v3/files?q=%27${id}%27+in+parents+and+trashed%3Dfalse&key=${API_KEY}&fields=files(id,name,mimeType)&orderBy=folder,name`;
+        const data = await fetch(url).then(r => r.json());
+
+        el.innerHTML = "";
+        if (!data.files?.length) {
+          el.innerHTML = `<div class="state">This folder is empty.</div>`;
+          return;
+        }
+
+        data.files.forEach(f => {
+          const row = document.createElement("div");
+          row.className = "file-row";
+          const isFolder = f.mimeType === "application/vnd.google-apps.folder";
+          row.innerHTML = `
+            <span class="file-emoji">${icon(f.mimeType)}</span>
+            <div class="file-info">
+              <div class="file-name">${f.name}</div>
+              <div class="file-meta">${label(f.mimeType)}</div>
+            </div>
+            <span class="file-chevron">${isFolder ? "›" : ""}</span>`;
+          row.onclick = isFolder ? () => navigateTo(f.id, f.name) : () => openFile(f);
+          el.appendChild(row);
+        });
+      } catch (e) {
+        el.innerHTML = `<div class="state">Failed to load. Check your API key & sharing settings.</div>`;
+      }
+
+      syncUI();
+    }
+
+    /* ─ Navigation ─ */
+    function navigateTo(id, name) {
+      trail.push({ id, name });
+      load(id);
+    }
+
+    document.getElementById("backBtn").onclick = () => {
+      if (trail.length <= 1) return;
+      trail.pop();
+      load(trail[trail.length - 1].id);
+    };
+
+    function jumpTo(i) {
+      trail = trail.slice(0, i + 1);
+      load(trail[trail.length - 1].id);
+    }
+
+    function syncUI() {
+      const cur = trail[trail.length - 1];
+      document.getElementById("folderTitle").textContent =
+        trail.length > 1 ? cur.name : "All Files";
+      document.getElementById("backBtn").disabled = trail.length <= 1;
+
+      const bc = document.getElementById("breadcrumb");
+      bc.innerHTML = trail.map((c, i) => {
+        const last = i === trail.length - 1;
+        return last
+          ? `<span class="cur">${c.name}</span>`
+          : `<span onclick="jumpTo(${i})">${c.name}</span><span class="sep"> / </span>`;
+      }).join("");
+    }
+
+    /* ─ Open File ─ */
+    function openFile(f) {
+      const viewer  = document.getElementById("viewer");
+      const content = document.getElementById("viewerContent");
+
+      document.getElementById("viewerName").textContent = f.name;
+      document.getElementById("driveLink").href = `https://drive.google.com/file/d/${f.id}/view`;
+      content.innerHTML = "";
+      viewer.classList.add("active");
+
+      if (f.mimeType.includes("image")) {
+        // Use thumbnail URL which is publicly accessible for shared files
+        const img = document.createElement("img");
+        img.alt = f.name;
+        // Try the uc export first; if it fails fall back to thumbnail
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`;
+        };
+        img.src = `https://lh3.googleusercontent.com/d/${f.id}`;
+        content.appendChild(img);
+      } else {
+        const iframe = document.createElement("iframe");
+        iframe.src = `https://drive.google.com/file/d/${f.id}/preview`;
+        iframe.allow = "autoplay";
+        iframe.allowFullscreen = true;
+        content.appendChild(iframe);
+      }
+    }
+
+    /* ─ Close Viewer ─ */
+    document.getElementById("closeViewer").onclick = () => {
+      document.getElementById("viewer").classList.remove("active");
+      document.getElementById("viewerContent").innerHTML = "";
+    };
+    document.addEventListener("keydown", e => {
+      if (e.key === "Escape") document.getElementById("closeViewer").click();
+    });
+
+    /* ─ Theme ─ */
+    const themeBtn = document.getElementById("themeBtn");
+    themeBtn.onclick = () => {
+      document.body.classList.toggle("light");
+      themeBtn.textContent = document.body.classList.contains("light") ? "🌙" : "☀️";
+    };
+
+    /* ─ Init ─ */
+    load(ROOT_ID);
+    syncUI();
+  </script>
+</body>
+</html>
