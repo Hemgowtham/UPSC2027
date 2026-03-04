@@ -4,271 +4,141 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>UPSC2027</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
-    /* ── Tokens ── */
     :root {
-      --bg: #0c0c0c; --surface: #141414; --border: #242424;
-      --text: #ededed; --sub: #666; --hover: #1c1c1c; --active: #202020;
-      --sidebar-w: 220px; --topbar-h: 52px; --subnav-h: 40px;
+      --bg:#0c0c0c;--surface:#141414;--border:#242424;
+      --text:#ededed;--sub:#666;--hover:#1c1c1c;--active:#202020;
+      --sidebar-w:220px;--topbar-h:52px;--subnav-h:40px;
     }
-    body.light {
-      --bg: #f8f8f8; --surface: #ffffff; --border: #e4e4e4;
-      --text: #111; --sub: #888; --hover: #f0f0f0; --active: #ebebeb;
-    }
+    body.light{--bg:#f8f8f8;--surface:#fff;--border:#e4e4e4;--text:#111;--sub:#888;--hover:#f0f0f0;--active:#ebebeb;}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .2s,color .2s;-webkit-font-smoothing:antialiased;}
+    button{all:unset;cursor:pointer;font-family:'Inter',sans-serif;}
+    a{color:inherit;text-decoration:none;}
 
-    /* ── Base ── */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
-      min-height: 100vh; transition: background .2s, color .2s; -webkit-font-smoothing: antialiased; }
-    a { color: inherit; text-decoration: none; }
-    button { all: unset; cursor: pointer; font-family: 'Inter', sans-serif; }
+    /* TOPBAR */
+    #topbar{position:fixed;top:0;left:0;right:0;z-index:300;height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 16px;gap:0;}
+    #hamburger{display:none;font-size:20px;padding:6px 10px 6px 0;flex-shrink:0;}
+    .brand{font-size:15px;font-weight:600;letter-spacing:.4px;margin-right:24px;flex-shrink:0;cursor:pointer;}
+    .brand span{font-weight:300;opacity:.45;}
+    #topnav{display:flex;align-items:stretch;gap:0;flex:1;overflow-x:auto;scrollbar-width:none;}
+    #topnav::-webkit-scrollbar{display:none;}
+    .tn-item{position:relative;display:flex;align-items:center;padding:0 13px;height:var(--topbar-h);font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:color .15s,border-color .15s;user-select:none;}
+    .tn-item:hover,.tn-item.active{color:var(--text);border-bottom-color:var(--text);}
+    .caret{font-size:9px;margin-left:4px;opacity:.4;}
+    .tn-dd{position:absolute;top:calc(var(--topbar-h) - 2px);left:0;background:var(--surface);border:1px solid var(--border);border-radius:8px;min-width:150px;padding:6px 0;display:none;z-index:400;box-shadow:0 8px 24px rgba(0,0,0,.35);}
+    .tn-item:hover .tn-dd{display:block;}
+    .tn-dd a{display:block;padding:8px 16px;font-size:13px;color:var(--sub);transition:background .1s,color .1s;cursor:pointer;}
+    .tn-dd a:hover{background:var(--hover);color:var(--text);}
+    #tbright{display:flex;align-items:center;gap:8px;margin-left:auto;flex-shrink:0;}
+    .tbtn{font-size:13px;padding:5px 11px;border:1px solid var(--border);border-radius:6px;color:var(--sub);transition:background .15s;}
+    .tbtn:hover{background:var(--hover);color:var(--text);}
 
-    /* ── TOP NAV ── */
-    #topbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
-      height: var(--topbar-h); background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 0; padding: 0 16px;
-    }
-    #hamburger { display: none; font-size: 20px; padding: 6px 10px 6px 0; flex-shrink: 0; }
-    .brand { font-size: 15px; font-weight: 600; letter-spacing: .4px; margin-right: 28px; flex-shrink: 0; }
-    .brand span { font-weight: 300; opacity: .5; }
+    /* SUBNAV */
+    #subnav{position:fixed;top:var(--topbar-h);left:0;right:0;z-index:200;min-height:var(--subnav-h);background:var(--bg);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:4px 16px;gap:4px;overflow-x:auto;scrollbar-width:none;flex-wrap:wrap;}
+    #subnav::-webkit-scrollbar{display:none;}
+    #subnav:empty{min-height:0;border-bottom:none;padding:0;}
+    .sn-pill{padding:4px 12px;border-radius:20px;font-size:12px;font-weight:500;color:var(--sub);border:1px solid transparent;white-space:nowrap;transition:all .15s;}
+    .sn-pill:hover{color:var(--text);border-color:var(--border);}
+    .sn-pill.active{color:var(--text);background:var(--active);border-color:var(--border);}
 
-    /* top nav items */
-    #topnav { display: flex; align-items: stretch; gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
-    #topnav::-webkit-scrollbar { display: none; }
-    .tn-item {
-      position: relative; display: flex; align-items: center;
-      padding: 0 14px; height: var(--topbar-h); font-size: 13px; font-weight: 500;
-      color: var(--sub); cursor: pointer; white-space: nowrap;
-      border-bottom: 2px solid transparent;
-      transition: color .15s, border-color .15s;
-    }
-    .tn-item:hover, .tn-item.active { color: var(--text); border-bottom-color: var(--text); }
-    .tn-item .caret { font-size: 9px; margin-left: 5px; opacity: .5; }
+    /* LAYOUT */
+    #layout{display:flex;padding-top:calc(var(--topbar-h) + var(--subnav-h));min-height:100vh;}
 
-    /* dropdown */
-    .tn-dropdown {
-      position: absolute; top: calc(var(--topbar-h) - 2px); left: 0;
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 8px; min-width: 160px; padding: 6px 0;
-      display: none; z-index: 400; box-shadow: 0 8px 24px rgba(0,0,0,.3);
-    }
-    .tn-item:hover .tn-dropdown { display: block; }
-    .tn-dropdown a {
-      display: block; padding: 8px 16px; font-size: 13px; color: var(--sub);
-      transition: background .1s, color .1s;
-    }
-    .tn-dropdown a:hover { background: var(--hover); color: var(--text); }
+    /* SIDEBAR */
+    #sidebar{width:var(--sidebar-w);flex-shrink:0;position:fixed;top:calc(var(--topbar-h)+var(--subnav-h));left:0;bottom:0;overflow-y:auto;background:var(--surface);border-right:1px solid var(--border);padding:16px 0 40px;transition:transform .25s ease;scrollbar-width:thin;scrollbar-color:var(--border) transparent;z-index:160;}
+    .sb-section{margin-bottom:20px;}
+    .sb-label{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--sub);text-transform:uppercase;padding:0 18px 6px;}
+    .sb-item{display:flex;align-items:center;gap:10px;padding:7px 18px;font-size:13px;font-weight:400;color:var(--sub);cursor:pointer;border-left:2px solid transparent;transition:all .15s;}
+    .sb-item:hover{color:var(--text);background:var(--hover);}
+    .sb-item.active{color:var(--text);background:var(--active);border-left-color:var(--text);font-weight:500;}
+    .sb-icon{font-size:15px;flex-shrink:0;}
+    .sb-sub{padding-left:14px;display:none;}
+    .sb-sub .sb-item{font-size:12px;padding:5px 18px 5px 14px;border-left:1px solid var(--border);}
+    #overlay{display:none;position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.5);}
+    #overlay.show{display:block;}
 
-    /* theme + right */
-    #topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
-    .theme-btn {
-      font-size: 14px; padding: 5px 10px;
-      border: 1px solid var(--border); border-radius: 6px; color: var(--sub);
-      transition: background .15s;
-    }
-    .theme-btn:hover { background: var(--hover); color: var(--text); }
+    /* MAIN */
+    #main{flex:1;margin-left:var(--sidebar-w);padding:28px 28px 60px;min-width:0;}
+    .page-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+    .page-title{font-size:22px;font-weight:600;letter-spacing:-.3px;}
+    .page-sub{font-size:13px;color:var(--sub);margin-top:3px;}
+    .view-toggle{display:flex;gap:4px;}
+    .vbtn{padding:5px 10px;border:1px solid var(--border);border-radius:6px;font-size:15px;color:var(--sub);transition:all .15s;}
+    .vbtn:hover,.vbtn.on{color:var(--text);background:var(--active);border-color:var(--border);}
 
-    /* ── SUB-NAV strip (context) ── */
-    #subnav {
-      position: fixed; top: var(--topbar-h); left: 0; right: 0; z-index: 200;
-      height: var(--subnav-h); background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; padding: 0 16px; gap: 4px;
-      overflow-x: auto; scrollbar-width: none;
-    }
-    #subnav::-webkit-scrollbar { display: none; }
-    .sn-pill {
-      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
-      color: var(--sub); border: 1px solid transparent; white-space: nowrap;
-      transition: all .15s;
-    }
-    .sn-pill:hover { color: var(--text); border-color: var(--border); }
-    .sn-pill.active { color: var(--text); background: var(--active); border-color: var(--border); }
+    .breadcrumb{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12px;color:var(--sub);margin-bottom:20px;}
+    .breadcrumb span{cursor:pointer;transition:color .15s;}
+    .breadcrumb span:hover{color:var(--text);}
+    .breadcrumb .cur{color:var(--text);font-weight:500;cursor:default;}
+    .breadcrumb .sep{opacity:.3;}
 
-    /* ── LAYOUT ── */
-    #layout {
-      display: flex;
-      padding-top: calc(var(--topbar-h) + var(--subnav-h));
-      min-height: 100vh;
-    }
+    /* FILES */
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(155px,1fr));gap:12px;}
+    .list{display:flex;flex-direction:column;gap:2px;}
+    .card{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px 14px;cursor:pointer;display:flex;flex-direction:column;gap:10px;transition:border-color .15s,transform .15s;}
+    .card:hover{border-color:var(--text);transform:translateY(-2px);}
+    .card .c-icon{font-size:26px;}
+    .card .c-name{font-size:13px;font-weight:500;line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+    .card .c-type{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;}
+    .row{display:flex;align-items:center;gap:14px;padding:10px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:background .15s,border-color .15s;}
+    .row:hover{background:var(--hover);border-color:var(--border);}
+    .row .c-icon{font-size:18px;flex-shrink:0;width:26px;text-align:center;}
+    .row .c-name{font-size:13px;font-weight:400;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .row .c-type{font-size:11px;color:var(--sub);text-transform:uppercase;letter-spacing:.4px;flex-shrink:0;}
+    .row .c-chev{color:var(--sub);font-size:14px;flex-shrink:0;}
 
-    /* ── SIDEBAR ── */
-    #sidebar {
-      width: var(--sidebar-w); flex-shrink: 0;
-      position: fixed; top: calc(var(--topbar-h) + var(--subnav-h));
-      left: 0; bottom: 0; overflow-y: auto;
-      background: var(--surface); border-right: 1px solid var(--border);
-      padding: 20px 0; transition: transform .25s ease;
-      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
-    }
-    #sidebar.hidden-mobile { transform: translateX(-100%); }
+    .state{text-align:center;padding:80px 20px;color:var(--sub);font-size:14px;line-height:1.8;}
+    .state .err{color:#e07070;font-size:12px;margin-top:14px;font-family:monospace;background:rgba(200,80,80,.08);padding:12px 16px;border-radius:8px;text-align:left;word-break:break-all;border:1px solid rgba(200,80,80,.2);}
+    .spinner{width:24px;height:24px;border:2px solid var(--border);border-top-color:var(--text);border-radius:50%;animation:spin .6s linear infinite;margin:0 auto 14px;}
+    @keyframes spin{to{transform:rotate(360deg);}}
 
-    .sb-section { margin-bottom: 24px; }
-    .sb-label {
-      font-size: 10px; font-weight: 600; letter-spacing: 1px;
-      color: var(--sub); text-transform: uppercase;
-      padding: 0 18px 8px;
-    }
-    .sb-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 7px 18px; font-size: 13px; font-weight: 400;
-      color: var(--sub); cursor: pointer; border-left: 2px solid transparent;
-      transition: all .15s;
-    }
-    .sb-item:hover { color: var(--text); background: var(--hover); }
-    .sb-item.active { color: var(--text); background: var(--active); border-left-color: var(--text); font-weight: 500; }
-    .sb-item .sb-icon { font-size: 15px; flex-shrink: 0; }
+    /* VIEWER */
+    #viewer{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.96);display:none;flex-direction:column;}
+    #viewer.on{display:flex;}
+    .vbar{background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;padding:0 16px;height:52px;flex-shrink:0;}
+    .vbar-name{flex:1;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+    .vbar-btn{padding:5px 12px;border:1px solid var(--border);border-radius:6px;font-size:13px;color:var(--sub);transition:all .15s;}
+    .vbar-btn:hover{background:var(--hover);color:var(--text);}
+    #vcontent{flex:1;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+    #vcontent img{max-width:100%;max-height:100%;object-fit:contain;padding:20px;display:block;}
+    #vcontent iframe{width:100%;height:100%;border:none;}
+    .nav-arrow{position:absolute;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:24px;padding:10px 16px;border-radius:8px;transition:background .15s;z-index:10;}
+    .nav-arrow:hover{background:rgba(255,255,255,.18);}
+    #prevBtn{left:16px;}#nextBtn{right:16px;}
+    .nav-arrow:disabled{opacity:.15;pointer-events:none;}
+    .img-counter{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);font-size:12px;color:rgba(255,255,255,.35);pointer-events:none;}
 
-    /* sub items */
-    .sb-sub { padding-left: 30px; border-left: 2px solid transparent; }
-    .sb-sub .sb-item { font-size: 12px; padding: 5px 14px 5px 0; }
-
-    /* overlay for mobile */
-    #overlay {
-      display: none; position: fixed; inset: 0; z-index: 150;
-      background: rgba(0,0,0,.5); backdrop-filter: blur(2px);
-    }
-    #overlay.show { display: block; }
-
-    /* ── MAIN ── */
-    #main {
-      flex: 1; margin-left: var(--sidebar-w);
-      padding: 28px 28px 60px; min-width: 0;
-    }
-
-    /* page header */
-    .page-header {
-      display: flex; align-items: flex-end; justify-content: space-between;
-      margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
-    }
-    .page-title { font-size: 22px; font-weight: 600; letter-spacing: -.3px; }
-    .page-sub { font-size: 13px; color: var(--sub); margin-top: 3px; }
-    .view-toggle { display: flex; gap: 4px; }
-    .vbtn {
-      padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
-      font-size: 15px; color: var(--sub); transition: all .15s;
-    }
-    .vbtn:hover, .vbtn.on { color: var(--text); background: var(--active); border-color: var(--border); }
-
-    /* breadcrumb */
-    .breadcrumb {
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      font-size: 12px; color: var(--sub); margin-bottom: 20px;
-    }
-    .breadcrumb span { cursor: pointer; transition: color .15s; }
-    .breadcrumb span:hover { color: var(--text); }
-    .breadcrumb .cur { color: var(--text); font-weight: 500; cursor: default; }
-    .breadcrumb .sep { opacity: .3; }
-
-    /* ── Grid & List ── */
-    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; }
-    .list { display: flex; flex-direction: column; gap: 2px; }
-
-    .card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: 10px; padding: 16px 14px; cursor: pointer;
-      display: flex; flex-direction: column; gap: 10px;
-      transition: border-color .15s, transform .15s;
-    }
-    .card:hover { border-color: var(--text); transform: translateY(-2px); }
-    .card .c-icon { font-size: 26px; }
-    .card .c-name { font-size: 13px; font-weight: 500; line-height: 1.4;
-      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-    .card .c-type { font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: .4px; }
-
-    .row {
-      display: flex; align-items: center; gap: 14px;
-      padding: 10px 12px; border-radius: 8px; cursor: pointer;
-      border: 1px solid transparent; transition: background .15s, border-color .15s;
-    }
-    .row:hover { background: var(--hover); border-color: var(--border); }
-    .row .c-icon { font-size: 18px; flex-shrink: 0; width: 26px; text-align: center; }
-    .row .c-name { font-size: 13px; font-weight: 400; flex: 1;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .row .c-type { font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0; }
-    .row .c-chev { color: var(--sub); font-size: 14px; flex-shrink: 0; }
-
-    /* state */
-    .state { text-align: center; padding: 80px 20px; color: var(--sub); font-size: 14px; }
-    .spinner { width: 24px; height: 24px; border: 2px solid var(--border);
-      border-top-color: var(--text); border-radius: 50%;
-      animation: spin .6s linear infinite; margin: 0 auto 14px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── IMAGE VIEWER ── */
-    #viewer {
-      position: fixed; inset: 0; z-index: 500;
-      background: rgba(0,0,0,.95);
-      display: none; flex-direction: column;
-    }
-    #viewer.on { display: flex; }
-    .vbar {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; gap: 10px;
-      padding: 0 16px; height: 52px; flex-shrink: 0;
-    }
-    .vbar-name { flex: 1; font-size: 13px; font-weight: 500;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .vbar-btn {
-      padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px;
-      font-size: 13px; color: var(--sub); transition: all .15s;
-    }
-    .vbar-btn:hover { background: var(--hover); color: var(--text); }
-
-    #vcontent {
-      flex: 1; display: flex; align-items: center; justify-content: center;
-      overflow: hidden; position: relative;
-    }
-    #vcontent img { max-width: 100%; max-height: 100%; object-fit: contain; padding: 16px; display: block; }
-    #vcontent iframe { width: 100%; height: 100%; border: none; }
-
-    /* prev / next */
-    .nav-arrow {
-      position: absolute; top: 50%; transform: translateY(-50%);
-      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
-      color: #fff; font-size: 22px; padding: 10px 14px; border-radius: 8px;
-      transition: background .15s; z-index: 10;
-    }
-    .nav-arrow:hover { background: rgba(255,255,255,.18); }
-    #prevBtn { left: 16px; }
-    #nextBtn { right: 16px; }
-    .nav-arrow:disabled { opacity: .2; pointer-events: none; }
-    .img-counter { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
-      font-size: 12px; color: rgba(255,255,255,.4); pointer-events: none; }
-
-    /* ── Responsive ── */
-    @media (max-width: 768px) {
-      #hamburger { display: block; }
-      #sidebar { transform: translateX(-100%); z-index: 160; }
-      #sidebar.open { transform: translateX(0); }
-      #main { margin-left: 0; padding: 20px 16px 60px; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
-      .page-title { font-size: 18px; }
-      #topnav { display: none; }
+    /* RESPONSIVE */
+    @media(max-width:768px){
+      #hamburger{display:block;}
+      #sidebar{transform:translateX(-100%);}
+      #sidebar.open{transform:translateX(0);}
+      #main{margin-left:0;padding:20px 16px 60px;}
+      .grid{grid-template-columns:repeat(auto-fill,minmax(130px,1fr));}
+      .page-title{font-size:18px;}
+      #topnav{display:none;}
+      .nav-arrow{padding:8px 12px;font-size:20px;}
+      #prevBtn{left:8px;}#nextBtn{right:8px;}
     }
   </style>
 </head>
 <body>
 
-<!-- ── TOP NAV ── -->
+<!-- TOPBAR -->
 <nav id="topbar">
   <button id="hamburger">☰</button>
-  <div class="brand">UPSC<span>2027</span></div>
-
+  <div class="brand" onclick="loadRoot()">UPSC<span>2027</span></div>
   <div id="topnav">
-    <div class="tn-item" onclick="loadSection('prelims','GS')">
-      PRELIMS <span class="caret">▾</span>
-      <div class="tn-dropdown">
+    <div class="tn-item" onclick="loadSection('prelims','GS')">PRELIMS<span class="caret">▾</span>
+      <div class="tn-dd">
         <a onclick="loadSection('prelims','GS');event.stopPropagation()">GS</a>
         <a onclick="loadSection('prelims','CSAT');event.stopPropagation()">CSAT</a>
       </div>
     </div>
-    <div class="tn-item" onclick="loadSection('mains','GS4')">
-      MAINS <span class="caret">▾</span>
-      <div class="tn-dropdown">
+    <div class="tn-item" onclick="loadSection('mains','GS4')">MAINS<span class="caret">▾</span>
+      <div class="tn-dd">
         <a onclick="loadSection('mains','GS1');event.stopPropagation()">GS1</a>
         <a onclick="loadSection('mains','GS2');event.stopPropagation()">GS2</a>
         <a onclick="loadSection('mains','GS3');event.stopPropagation()">GS3</a>
@@ -279,46 +149,58 @@
       </div>
     </div>
     <div class="tn-item" onclick="loadSection('interview','ROOT')">INTERVIEW</div>
-    <div class="tn-item" onclick="loadSection('subjects','ROOT')">
-      SUBJECTS <span class="caret">▾</span>
-      <div class="tn-dropdown" id="subjectsDropdown">
-        <!-- auto-populated or static list -->
-        <a onclick="loadSection('subjects','ROOT');event.stopPropagation()">All Subjects</a>
+    <div class="tn-item" onclick="loadSection('subjects','ROOT')">SUBJECTS<span class="caret">▾</span>
+      <div class="tn-dd">
+        <a onclick="loadSubject('POLITY');event.stopPropagation()">Polity</a>
+        <a onclick="loadSubject('ECONOMY');event.stopPropagation()">Economy</a>
+        <a onclick="loadSubject('GEOGRAPHY');event.stopPropagation()">Geography</a>
+        <a onclick="loadSubject('HISTORY');event.stopPropagation()">History</a>
+        <a onclick="loadSubject('ENVIRONMENT');event.stopPropagation()">Environment</a>
+        <a onclick="loadSubject('CURRENT EVENTS');event.stopPropagation()">Current Events</a>
+        <a onclick="loadSubject('SCIENCE AND TECHNOLOGY');event.stopPropagation()">Science & Tech</a>
+        <a onclick="loadSubject('ART AND CULTURE');event.stopPropagation()">Art & Culture</a>
+        <a onclick="loadSubject('INDIAN SOCIETY');event.stopPropagation()">Indian Society</a>
+        <a onclick="loadSubject('GOVERNANCE');event.stopPropagation()">Governance</a>
+        <a onclick="loadSubject('INTERNATIONAL RELATIONS');event.stopPropagation()">Intl. Relations</a>
+        <a onclick="loadSubject('DISASTER MANAGEMENT');event.stopPropagation()">Disaster Mgmt</a>
+        <a onclick="loadSubject('INTERNAL SECURITY');event.stopPropagation()">Internal Security</a>
       </div>
     </div>
     <div class="tn-item" onclick="loadSection('joplin','ROOT')">JOPLIN NOTES</div>
-    <div class="tn-item" onclick="loadSection('maths','ROOT')">MATHEMATICS OPTIONAL</div>
+    <div class="tn-item" onclick="loadSection('maths','ROOT')">MATHS OPTIONAL</div>
   </div>
-
-  <div id="topbar-right">
-    <button class="theme-btn" id="themeBtn">☀️</button>
+  <div id="tbright">
+    <button class="tbtn" id="themeBtn">☀️</button>
   </div>
 </nav>
 
-<!-- ── SUB NAV ── -->
+<!-- SUBNAV -->
 <div id="subnav"></div>
-
-<!-- overlay -->
 <div id="overlay"></div>
 
-<!-- ── LAYOUT ── -->
 <div id="layout">
-
   <!-- SIDEBAR -->
   <aside id="sidebar">
     <div class="sb-section">
-      <div class="sb-label">Exam</div>
-      <div class="sb-item" data-sec="prelims" onclick="loadSection('prelims','GS')">
-        <span class="sb-icon">📘</span> Prelims
+      <div class="sb-label">Home</div>
+      <div class="sb-item" id="sb-root" onclick="loadRoot()">
+        <span class="sb-icon">🏠</span>All Files
       </div>
-      <div class="sb-sub" id="sb-prelims" style="display:none">
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Exam Stages</div>
+      <div class="sb-item" data-sec="prelims" onclick="toggleSb('prelims');loadSection('prelims','GS')">
+        <span class="sb-icon">📘</span>Prelims
+      </div>
+      <div class="sb-sub" id="sb-prelims">
         <div class="sb-item" onclick="loadSection('prelims','GS')">GS</div>
         <div class="sb-item" onclick="loadSection('prelims','CSAT')">CSAT</div>
       </div>
-      <div class="sb-item" data-sec="mains" onclick="loadSection('mains','GS4')">
-        <span class="sb-icon">📗</span> Mains
+      <div class="sb-item" data-sec="mains" onclick="toggleSb('mains');loadSection('mains','GS4')">
+        <span class="sb-icon">📗</span>Mains
       </div>
-      <div class="sb-sub" id="sb-mains" style="display:none">
+      <div class="sb-sub" id="sb-mains">
         <div class="sb-item" onclick="loadSection('mains','GS1')">GS1</div>
         <div class="sb-item" onclick="loadSection('mains','GS2')">GS2</div>
         <div class="sb-item" onclick="loadSection('mains','GS3')">GS3</div>
@@ -328,16 +210,16 @@
         <div class="sb-item" onclick="loadSection('mains','ENGLISH')">English</div>
       </div>
       <div class="sb-item" data-sec="interview" onclick="loadSection('interview','ROOT')">
-        <span class="sb-icon">🎙️</span> Interview
+        <span class="sb-icon">🎙️</span>Interview
       </div>
     </div>
 
     <div class="sb-section">
       <div class="sb-label">Resources</div>
-      <div class="sb-item" data-sec="subjects" onclick="loadSection('subjects','ROOT')">
-        <span class="sb-icon">📚</span> Subjects
+      <div class="sb-item" data-sec="subjects" onclick="toggleSb('subjects');loadSection('subjects','ROOT')">
+        <span class="sb-icon">📚</span>Subjects
       </div>
-      <div class="sb-sub" id="sb-subjects" style="display:none">
+      <div class="sb-sub" id="sb-subjects">
         <div class="sb-item" onclick="loadSubject('POLITY')">Polity</div>
         <div class="sb-item" onclick="loadSubject('ECONOMY')">Economy</div>
         <div class="sb-item" onclick="loadSubject('GEOGRAPHY')">Geography</div>
@@ -353,10 +235,10 @@
         <div class="sb-item" onclick="loadSubject('INTERNAL SECURITY')">Internal Security</div>
       </div>
       <div class="sb-item" data-sec="joplin" onclick="loadSection('joplin','ROOT')">
-        <span class="sb-icon">📓</span> Joplin Notes
+        <span class="sb-icon">📓</span>Joplin Notes
       </div>
       <div class="sb-item" data-sec="maths" onclick="loadSection('maths','ROOT')">
-        <span class="sb-icon">📐</span> Maths Optional
+        <span class="sb-icon">📐</span>Maths Optional
       </div>
     </div>
   </aside>
@@ -365,8 +247,8 @@
   <main id="main">
     <div class="page-header">
       <div>
-        <div class="page-title" id="pageTitle">Welcome</div>
-        <div class="page-sub" id="pageSub">Select a section to get started</div>
+        <div class="page-title" id="pageTitle">All Files</div>
+        <div class="page-sub" id="pageSub">Your complete Drive library</div>
       </div>
       <div class="view-toggle">
         <button class="vbtn on" id="gridBtn" title="Grid">⊞</button>
@@ -375,362 +257,351 @@
     </div>
     <div class="breadcrumb" id="breadcrumb"></div>
     <div id="files">
-      <div class="state">
-        <div style="font-size:36px;margin-bottom:12px">📖</div>
-        Select a section from the sidebar or top navigation to browse your materials.
-      </div>
+      <div class="state"><div class="spinner"></div>Loading your Drive…</div>
     </div>
   </main>
 </div>
 
-<!-- ── VIEWER ── -->
+<!-- VIEWER -->
 <div id="viewer">
   <div class="vbar">
     <button class="vbar-btn" id="closeViewer">✕ Close</button>
     <span class="vbar-name" id="vname"></span>
-    <a class="vbar-btn" id="vdrivelink" href="#" target="_blank">↗ Drive</a>
+    <a class="vbar-btn" id="vdrivelink" href="#" target="_blank">↗ Open in Drive</a>
   </div>
   <div id="vcontent">
-    <button class="nav-arrow" id="prevBtn">‹</button>
-    <button class="nav-arrow" id="nextBtn">›</button>
+    <button class="nav-arrow" id="prevBtn" disabled>‹</button>
+    <button class="nav-arrow" id="nextBtn" disabled>›</button>
     <div class="img-counter" id="imgCounter"></div>
   </div>
 </div>
 
 <script>
+/* ══════════════════════════════════════
+   CONFIG
+══════════════════════════════════════ */
 const API_KEY = "AIzaSyAGL2uXdY9SSz3ROPm0vjYdLzy2wGh4ryc";
+const ROOT_ID = "1jL6z2VKzFhklPVzXLe2W6dSXOY5GmI0T";
 
-/* ── Folder config ── */
 const FOLDERS = {
-  prelims: {
-    GS:   "1B0UInKhvD3qgsW3Tcnj6KBo-LnkUIacS",
-    CSAT: "14_cjaMTUGZauYi4AQVfRt0jzXcmbNCfJ"
-  },
-  mains: {
-    GS1:     null, // add later
-    GS2:     null,
-    GS3:     null,
-    GS4:     "1lA2CMXBwEmdfB358YeqB9vGX0H0h-xBo",
-    ESSAY:   "12w1BlvoIkApqoKXoJW5sX0e-p2HsVjAq",
-    TELUGU:  "1qFksmqvlf0hODfdXWi7MTQMY2h94slZF",
-    ENGLISH: "14dnXcVuv3CaMrcTEJIor8kzmtWH6ZHwR"
-  },
-  interview: { ROOT: "1njbqGeXmfJMf_ZkP18DjzGP-7irNxu0L" },
-  subjects:  { ROOT: null }, // top-level; sub-folders below
-  joplin:    { ROOT: "1CuzLV1FrWNEIUz4I-7n_OQDbSaKpMIQP" },
-  maths:     { ROOT: "1bYTlCn4rCmMLTh3zqT-zIa2Gq7f0BmbP" }
+  prelims:   { GS:"1B0UInKhvD3qgsW3Tcnj6KBo-LnkUIacS", CSAT:"14_cjaMTUGZauYi4AQVfRt0jzXcmbNCfJ" },
+  mains:     { GS1:null, GS2:null, GS3:null,
+               GS4:"1lA2CMXBwEmdfB358YeqB9vGX0H0h-xBo",
+               ESSAY:"12w1BlvoIkApqoKXoJW5sX0e-p2HsVjAq",
+               TELUGU:"1qFksmqvlf0hODfdXWi7MTQMY2h94slZF",
+               ENGLISH:"14dnXcVuv3CaMrcTEJIor8kzmtWH6ZHwR" },
+  interview: { ROOT:"1njbqGeXmfJMf_ZkP18DjzGP-7irNxu0L" },
+  subjects:  { ROOT:null },
+  joplin:    { ROOT:"1CuzLV1FrWNEIUz4I-7n_OQDbSaKpMIQP" },
+  maths:     { ROOT:"1bYTlCn4rCmMLTh3zqT-zIa2Gq7f0BmbP" }
 };
 
-/* Subject folder IDs — fill in when ready */
 const SUBJECT_IDS = {
-  "POLITY": "1zXApr5zupmzjELuoZprUgPGMHdRdZeTk", "ECONOMY": "1pIepNvOoAV5_j35Wp5eebhLbU1TZRmar", "GEOGRAPHY": "1PRAmBI7TGG9oGGsdBxqqOtNTc_SZpSL6", "HISTORY": "1CcKrNtlcOIVEhoLJYwJfyQf00F57H4k1",
-  "ENVIRONMENT": "1d_iMqiu3LSk9kvDcBsj0Rk8iL9xogn0b", "CURRENT EVENTS": "1i8-RZUJMJR02tcIOS8o8ZkiXWBh43TtH", "SCIENCE AND TECHNOLOGY": "16ZV7dtynqNICDEIdE_NVpYGEARQ9dakK",
-  "ART AND CULTURE": "1scFvV-S23T6_vMd4uv8sJYZmSgH_SGrq", "INDIAN SOCIETY": "1GuPFRojcthgSISbRfxSdqgI-3cvyZnSs", "GOVERNANCE": null,
-  "INTERNATIONAL RELATIONS": "162yLGFf9-daUH2Ft7LuDpu1173_w6QYd", "DISASTER MANAGEMENT": "1UTf6dCGLzNXM7DPCU5g8PzNFKcH1Iiwj", "INTERNAL SECURITY": "18onP2DQEXOTLarvYDnzqWJJ_DUOE3tIs"
+  "POLITY":"1zXApr5zupmzjELuoZprUgPGMHdRdZeTk",
+  "ECONOMY":"1pIepNvOoAV5_j35Wp5eebhLbU1TZRmar",
+  "GEOGRAPHY":"1PRAmBI7TGG9oGGsdBxqqOtNTc_SZpSL6",
+  "HISTORY":"1CcKrNtlcOIVEhoLJYwJfyQf00F57H4k1",
+  "ENVIRONMENT":"1d_iMqiu3LSk9kvDcBsj0Rk8iL9xogn0b",
+  "CURRENT EVENTS":"1i8-RZUJMJR02tcIOS8o8ZkiXWBh43TtH",
+  "SCIENCE AND TECHNOLOGY":"16ZV7dtynqNICDEIdE_NVpYGEARQ9dakK",
+  "ART AND CULTURE":"1scFvV-S23T6_vMd4uv8sJYZmSgH_SGrq",
+  "INDIAN SOCIETY":"1GuPFRojcthgSISbRfxSdqgI-3cvyZnSs",
+  "GOVERNANCE":null,
+  "INTERNATIONAL RELATIONS":"162yLGFf9-daUH2Ft7LuDpu1173_w6QYd",
+  "DISASTER MANAGEMENT":"1UTf6dCGLzNXM7DPCU5g8PzNFKcH1Iiwj",
+  "INTERNAL SECURITY":"18onP2DQEXOTLarvYDnzqWJJ_DUOE3tIs"
 };
 
-/* ── State ── */
-let currentView = "grid";
-let trail = [];
-let currentSection = "";
-let currentSub = "";
+/* ══ State ══ */
+let view = "grid", trail = [], curSec = "", curSub = "";
+let imgFiles = [], imgIdx = 0;
 
-// Image navigation state
-let imageFiles = [];
-let imageIndex = 0;
-
-/* ── Helpers ── */
-function icon(mime) {
-  if (mime === "application/vnd.google-apps.folder") return "📁";
-  if (mime.includes("pdf"))    return "📄";
-  if (mime.includes("image"))  return "🖼";
-  if (mime.includes("video"))  return "🎬";
-  if (mime.includes("audio"))  return "🎵";
-  if (mime.includes("spreadsheet") || mime.includes("excel")) return "📊";
-  if (mime.includes("presentation")) return "📑";
-  if (mime.includes("document") || mime.includes("word")) return "📝";
+/* ══ Icons ══ */
+const iconFor = m => {
+  if(m==="application/vnd.google-apps.folder") return "📁";
+  if(m.includes("pdf"))    return "📄";
+  if(m.includes("image"))  return "🖼";
+  if(m.includes("video"))  return "🎬";
+  if(m.includes("audio"))  return "🎵";
+  if(m.includes("spreadsheet")||m.includes("excel")) return "📊";
+  if(m.includes("presentation")) return "📑";
+  if(m.includes("document")||m.includes("word")) return "📝";
   return "📎";
-}
-function typeLabel(mime) {
-  if (mime === "application/vnd.google-apps.folder") return "Folder";
-  if (mime.includes("pdf"))    return "PDF";
-  if (mime.includes("image"))  return "Image";
-  if (mime.includes("video"))  return "Video";
-  if (mime.includes("audio"))  return "Audio";
-  if (mime.includes("spreadsheet") || mime.includes("excel")) return "Sheet";
-  if (mime.includes("presentation")) return "Slides";
-  if (mime.includes("document") || mime.includes("word")) return "Doc";
+};
+const typeFor = m => {
+  if(m==="application/vnd.google-apps.folder") return "Folder";
+  if(m.includes("pdf"))    return "PDF";
+  if(m.includes("image"))  return "Image";
+  if(m.includes("video"))  return "Video";
+  if(m.includes("audio"))  return "Audio";
+  if(m.includes("spreadsheet")||m.includes("excel")) return "Sheet";
+  if(m.includes("presentation")) return "Slides";
+  if(m.includes("document")||m.includes("word")) return "Doc";
   return "File";
-}
+};
 
-/* ── Load from Drive ── */
+/* ══ Drive API ══ */
 async function driveList(folderId) {
-  const url = `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents+and+trashed%3Dfalse&key=${API_KEY}&fields=files(id,name,mimeType)&orderBy=folder,name`;
-  const r = await fetch(url);
-  return r.json();
+  const q = encodeURIComponent(`'${folderId}' in parents and trashed=false`);
+  const f = encodeURIComponent("files(id,name,mimeType)");
+  const url = `https://www.googleapis.com/drive/v3/files?q=${q}&orderBy=folder%2Cname&fields=${f}&key=${API_KEY}`;
+  const res = await fetch(url, { headers:{ Accept:"application/json" } });
+  if (!res.ok) {
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+  }
+  return res.json();
 }
 
-/* ── Render files ── */
+/* ══ Render ══ */
 function renderFiles(files) {
   const el = document.getElementById("files");
   el.innerHTML = "";
-  if (!files.length) { el.innerHTML = `<div class="state">This folder is empty.</div>`; return; }
+  if (!files?.length) { el.innerHTML=`<div class="state">📂 This folder is empty.</div>`; return; }
 
+  imgFiles = files.filter(f => f.mimeType.includes("image"));
   const wrap = document.createElement("div");
-  wrap.className = currentView === "grid" ? "grid" : "list";
-
-  // collect images for lightbox nav
-  imageFiles = files.filter(f => f.mimeType.includes("image"));
+  wrap.className = view==="grid" ? "grid" : "list";
 
   files.forEach(f => {
-    const isFolder = f.mimeType === "application/vnd.google-apps.folder";
-    const el2 = document.createElement("div");
-    el2.className = currentView === "grid" ? "card" : "row";
-
-    if (currentView === "grid") {
-      el2.innerHTML = `
-        <div class="c-icon">${icon(f.mimeType)}</div>
-        <div class="c-name">${f.name}</div>
-        <div class="c-type">${typeLabel(f.mimeType)}</div>`;
-    } else {
-      el2.innerHTML = `
-        <span class="c-icon">${icon(f.mimeType)}</span>
-        <span class="c-name">${f.name}</span>
-        <span class="c-type">${typeLabel(f.mimeType)}</span>
-        <span class="c-chev">${isFolder ? "›" : ""}</span>`;
-    }
-
-    if (isFolder) {
-      el2.onclick = () => drillInto(f.id, f.name);
-    } else {
-      el2.onclick = () => openFile(f);
-    }
-    wrap.appendChild(el2);
+    const isFolder = f.mimeType==="application/vnd.google-apps.folder";
+    const item = document.createElement("div");
+    item.className = view==="grid" ? "card" : "row";
+    item.innerHTML = view==="grid"
+      ? `<div class="c-icon">${iconFor(f.mimeType)}</div>
+         <div class="c-name">${f.name}</div>
+         <div class="c-type">${typeFor(f.mimeType)}</div>`
+      : `<span class="c-icon">${iconFor(f.mimeType)}</span>
+         <span class="c-name">${f.name}</span>
+         <span class="c-type">${typeFor(f.mimeType)}</span>
+         <span class="c-chev">${isFolder?"›":""}</span>`;
+    item.onclick = isFolder ? ()=>drillInto(f.id, f.name) : ()=>openFile(f);
+    wrap.appendChild(item);
   });
-
   el.appendChild(wrap);
 }
 
-/* ── Load a named section/sub ── */
-async function loadSection(sec, sub) {
-  currentSection = sec; currentSub = sub;
-  trail = [];
-
-  // resolve folder id
-  const id = FOLDERS[sec]?.[sub];
-  const labels = { prelims:"Prelims", mains:"Mains", interview:"Interview",
-                   subjects:"Subjects", joplin:"Joplin Notes", maths:"Maths Optional" };
-
-  document.getElementById("pageTitle").textContent = labels[sec] || sec;
-  document.getElementById("pageSub").textContent = sub === "ROOT" ? "" : sub;
-  updateSubnav(sec);
-  highlightSidebar(sec, sub);
-  closeMobileSidebar();
-
-  if (!id) {
-    document.getElementById("files").innerHTML = `<div class="state">📂 Folder coming soon — ID not set yet.</div>`;
-    updateBreadcrumb();
-    return;
-  }
-
-  trail.push({ id, name: sub === "ROOT" ? labels[sec] : sub });
-  await fetchAndRender(id);
-}
-
+/* ══ Fetch & render ══ */
 async function fetchAndRender(folderId) {
   document.getElementById("files").innerHTML = `<div class="state"><div class="spinner"></div>Loading…</div>`;
   try {
     const data = await driveList(folderId);
-    renderFiles(data.files || []);
+    renderFiles(data.files);
   } catch(e) {
-    document.getElementById("files").innerHTML = `<div class="state">Failed to load. Check API key & sharing settings.</div>`;
+    document.getElementById("files").innerHTML = `
+      <div class="state">⚠️ Could not load files.
+        <div class="err"><b>Error:</b> ${e.message}<br><br>
+          <b>Fix checklist:</b><br>
+          1. Right-click folder in Drive → Share → <b>"Anyone with the link"</b><br>
+          2. Enable <b>Google Drive API</b> in Google Cloud Console<br>
+          3. API key must have no HTTP referrer restrictions blocking this domain
+        </div>
+      </div>`;
   }
   updateBreadcrumb();
 }
 
-async function drillInto(id, name) {
-  trail.push({ id, name });
+/* ══ Root ══ */
+function loadRoot() {
+  curSec = "root"; curSub = "";
+  trail = [{ id: ROOT_ID, name: "All Files" }];
+  document.getElementById("pageTitle").textContent = "All Files";
+  document.getElementById("pageSub").textContent = "Your complete Drive library";
+  document.getElementById("subnav").innerHTML = "";
+  highlightSb(null);
+  document.getElementById("sb-root").classList.add("active");
+  closeMobile();
+  fetchAndRender(ROOT_ID);
+}
+
+/* ══ Section ══ */
+async function loadSection(sec, sub) {
+  curSec=sec; curSub=sub; trail=[];
+  const labels = {prelims:"Prelims",mains:"Mains",interview:"Interview",
+                  subjects:"Subjects",joplin:"Joplin Notes",maths:"Maths Optional"};
+  const id = FOLDERS[sec]?.[sub];
+
+  document.getElementById("pageTitle").textContent = labels[sec]||sec;
+  document.getElementById("pageSub").textContent = sub==="ROOT" ? "" : sub;
+  updateSubnav(sec);
+  highlightSb(sec);
+  closeMobile();
+
+  if (!id) {
+    document.getElementById("files").innerHTML =
+      `<div class="state">📂 <b>${sub}</b> — folder ID not added yet.<br>
+       <span style="font-size:12px;opacity:.6">Paste the Drive folder ID in the FOLDERS config.</span></div>`;
+    updateBreadcrumb(); return;
+  }
+  trail.push({ id, name: sub==="ROOT" ? labels[sec] : sub });
   await fetchAndRender(id);
 }
 
-/* Subjects shortcut */
+function drillInto(id, name) {
+  trail.push({ id, name });
+  fetchAndRender(id);
+}
+
+function jumpTo(i) {
+  trail = trail.slice(0, i+1);
+  fetchAndRender(trail[trail.length-1].id);
+}
+
+/* ══ Subjects ══ */
 function loadSubject(name) {
-  currentSection = "subjects"; currentSub = name;
+  curSec="subjects"; curSub=name;
   const id = SUBJECT_IDS[name];
   document.getElementById("pageTitle").textContent = name;
   document.getElementById("pageSub").textContent = "Subjects";
   updateSubnav("subjects");
-  highlightSidebar("subjects", name);
-  closeMobileSidebar();
-  trail = [{ id: id || null, name }];
+  highlightSb("subjects");
+  closeMobile();
+  trail = [{ id, name }];
   if (!id) {
-    document.getElementById("files").innerHTML = `<div class="state">📂 Folder coming soon — ID not set yet.</div>`;
+    document.getElementById("files").innerHTML =
+      `<div class="state">📂 <b>${name}</b> — folder ID not added yet.</div>`;
     updateBreadcrumb(); return;
   }
   fetchAndRender(id);
 }
 
-/* ── Sub-nav strip ── */
-const SUBNAV_CONFIG = {
-  prelims:   [{ label: "GS", sub: "GS" }, { label: "CSAT", sub: "CSAT" }],
-  mains:     [{ label:"GS1",sub:"GS1" },{ label:"GS2",sub:"GS2" },{ label:"GS3",sub:"GS3" },
-               { label:"GS4",sub:"GS4" },{ label:"Essay",sub:"ESSAY" },
-               { label:"Telugu",sub:"TELUGU" },{ label:"English",sub:"ENGLISH" }],
-  interview: [],
-  subjects:  Object.keys(SUBJECT_IDS).map(k => ({ label: k, sub: k })),
-  joplin:    [],
-  maths:     []
+/* ══ Subnav ══ */
+const SUBNAV = {
+  prelims:   [{l:"GS",s:"GS"},{l:"CSAT",s:"CSAT"}],
+  mains:     [{l:"GS1",s:"GS1"},{l:"GS2",s:"GS2"},{l:"GS3",s:"GS3"},
+              {l:"GS4",s:"GS4"},{l:"Essay",s:"ESSAY"},{l:"Telugu",s:"TELUGU"},{l:"English",s:"ENGLISH"}],
+  interview:[], joplin:[], maths:[],
+  subjects: Object.keys(SUBJECT_IDS).map(k=>({l:k,s:k}))
 };
-
 function updateSubnav(sec) {
   const sn = document.getElementById("subnav");
   sn.innerHTML = "";
-  const items = SUBNAV_CONFIG[sec] || [];
-  items.forEach(item => {
-    const pill = document.createElement("button");
-    pill.className = "sn-pill" + (item.sub === currentSub ? " active" : "");
-    pill.textContent = item.label;
-    pill.onclick = sec === "subjects"
-      ? () => loadSubject(item.sub)
-      : () => loadSection(sec, item.sub);
-    sn.appendChild(pill);
+  (SUBNAV[sec]||[]).forEach(item => {
+    const p = document.createElement("button");
+    p.className = "sn-pill" + (item.s===curSub ? " active" : "");
+    p.textContent = item.l;
+    p.onclick = sec==="subjects" ? ()=>loadSubject(item.s) : ()=>loadSection(sec,item.s);
+    sn.appendChild(p);
   });
 }
 
-/* ── Breadcrumb ── */
+/* ══ Breadcrumb ══ */
 function updateBreadcrumb() {
   const bc = document.getElementById("breadcrumb");
-  bc.innerHTML = trail.map((c, i) => {
-    const last = i === trail.length - 1;
+  bc.innerHTML = trail.map((c,i) => {
+    const last = i===trail.length-1;
     return last
       ? `<span class="cur">${c.name}</span>`
       : `<span onclick="jumpTo(${i})">${c.name}</span><span class="sep"> / </span>`;
   }).join("");
 }
 
-function jumpTo(i) {
-  trail = trail.slice(0, i + 1);
-  const cur = trail[trail.length - 1];
-  fetchAndRender(cur.id);
-}
-
-/* ── Sidebar highlight ── */
-function highlightSidebar(sec, sub) {
-  document.querySelectorAll(".sb-item[data-sec]").forEach(el => el.classList.remove("active"));
-  const target = document.querySelector(`.sb-item[data-sec="${sec}"]`);
-  if (target) target.classList.add("active");
-
-  // expand sub-list
-  ["prelims","mains","subjects"].forEach(s => {
-    const el = document.getElementById(`sb-${s}`);
-    if (el) el.style.display = s === sec ? "block" : "none";
+/* ══ Sidebar ══ */
+function highlightSb(sec) {
+  document.querySelectorAll(".sb-item").forEach(e=>e.classList.remove("active"));
+  if(sec) document.querySelector(`.sb-item[data-sec="${sec}"]`)?.classList.add("active");
+  ["prelims","mains","subjects"].forEach(s=>{
+    const el=document.getElementById(`sb-${s}`);
+    if(el) el.style.display = s===sec ? "block":"none";
   });
 }
-
-/* ── Open File / Viewer ── */
-function openFile(f) {
-  if (f.mimeType.includes("image")) {
-    imageIndex = imageFiles.findIndex(x => x.id === f.id);
-    showImage();
-  } else {
-    showInViewer(f, false);
-  }
+function toggleSb(sec) {
+  const el=document.getElementById(`sb-${sec}`);
+  if(el) el.style.display = el.style.display==="block"?"none":"block";
 }
 
-function showInViewer(f, isImg) {
-  const viewer = document.getElementById("viewer");
-  const content = document.getElementById("vcontent");
+/* ══ Viewer ══ */
+function openFile(f) {
+  if(f.mimeType.includes("image")) {
+    imgIdx = imgFiles.findIndex(x=>x.id===f.id);
+    showImg();
+  } else {
+    loadViewer(f, false);
+  }
+}
+function showImg() {
+  const f=imgFiles[imgIdx]; if(f) loadViewer(f,true);
+}
+function loadViewer(f, isImg) {
+  const content=document.getElementById("vcontent");
+  content.querySelectorAll("img,iframe").forEach(e=>e.remove());
   document.getElementById("vname").textContent = f.name;
   document.getElementById("vdrivelink").href = `https://drive.google.com/file/d/${f.id}/view`;
+  const prev=document.getElementById("prevBtn"), next=document.getElementById("nextBtn");
 
-  // remove old media
-  content.querySelectorAll("img, iframe").forEach(e => e.remove());
-
-  if (isImg) {
-    const img = document.createElement("img");
-    img.onerror = () => { img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`; };
-    img.src = `https://lh3.googleusercontent.com/d/${f.id}`;
+  if(isImg) {
+    const img=document.createElement("img");
+    let attempt=0;
+    const srcs=[
+      `https://lh3.googleusercontent.com/d/${f.id}=w2000`,
+      `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`,
+      `https://drive.google.com/uc?export=view&id=${f.id}`
+    ];
+    img.onerror=()=>{ attempt++; if(attempt<srcs.length) img.src=srcs[attempt]; };
+    img.src=srcs[0];
     content.appendChild(img);
-    document.getElementById("prevBtn").style.display = "";
-    document.getElementById("nextBtn").style.display = "";
-    updateArrows();
-    document.getElementById("imgCounter").textContent = `${imageIndex + 1} / ${imageFiles.length}`;
+    prev.style.display=""; next.style.display="";
+    prev.disabled=imgIdx===0; next.disabled=imgIdx===imgFiles.length-1;
+    document.getElementById("imgCounter").textContent =
+      imgFiles.length>1 ? `${imgIdx+1} / ${imgFiles.length}` : "";
   } else {
-    const iframe = document.createElement("iframe");
-    iframe.src = `https://drive.google.com/file/d/${f.id}/preview`;
-    iframe.allow = "autoplay";
+    const iframe=document.createElement("iframe");
+    iframe.src=`https://drive.google.com/file/d/${f.id}/preview`;
+    iframe.allow="autoplay"; iframe.allowFullscreen=true;
     content.appendChild(iframe);
-    document.getElementById("prevBtn").style.display = "none";
-    document.getElementById("nextBtn").style.display = "none";
-    document.getElementById("imgCounter").textContent = "";
+    prev.style.display="none"; next.style.display="none";
+    document.getElementById("imgCounter").textContent="";
   }
-
-  viewer.classList.add("on");
+  document.getElementById("viewer").classList.add("on");
 }
 
-function showImage() {
-  const f = imageFiles[imageIndex];
-  if (f) showInViewer(f, true);
-}
-
-function updateArrows() {
-  document.getElementById("prevBtn").disabled = imageIndex === 0;
-  document.getElementById("nextBtn").disabled = imageIndex === imageFiles.length - 1;
-}
-
-document.getElementById("prevBtn").onclick = () => { if (imageIndex > 0) { imageIndex--; showImage(); } };
-document.getElementById("nextBtn").onclick = () => { if (imageIndex < imageFiles.length - 1) { imageIndex++; showImage(); } };
-
-// Keyboard nav
-document.addEventListener("keydown", e => {
-  const v = document.getElementById("viewer");
-  if (!v.classList.contains("on")) return;
-  if (e.key === "ArrowLeft") document.getElementById("prevBtn").click();
-  if (e.key === "ArrowRight") document.getElementById("nextBtn").click();
-  if (e.key === "Escape") document.getElementById("closeViewer").click();
+document.getElementById("prevBtn").onclick=()=>{if(imgIdx>0){imgIdx--;showImg();}};
+document.getElementById("nextBtn").onclick=()=>{if(imgIdx<imgFiles.length-1){imgIdx++;showImg();}};
+document.getElementById("closeViewer").onclick=()=>{
+  document.getElementById("viewer").classList.remove("on");
+  document.getElementById("vcontent").querySelectorAll("img,iframe").forEach(e=>e.remove());
+};
+document.addEventListener("keydown",e=>{
+  if(!document.getElementById("viewer").classList.contains("on")) return;
+  if(e.key==="ArrowLeft") document.getElementById("prevBtn").click();
+  if(e.key==="ArrowRight") document.getElementById("nextBtn").click();
+  if(e.key==="Escape") document.getElementById("closeViewer").click();
 });
 
-document.getElementById("closeViewer").onclick = () => {
-  document.getElementById("viewer").classList.remove("on");
-  document.getElementById("vcontent").querySelectorAll("img,iframe").forEach(e => e.remove());
-};
-
-/* ── View toggle ── */
-document.getElementById("gridBtn").onclick = () => {
-  currentView = "grid";
+/* ══ View toggle ══ */
+document.getElementById("gridBtn").onclick=()=>{
+  view="grid";
   document.getElementById("gridBtn").classList.add("on");
   document.getElementById("listBtn").classList.remove("on");
-  reRender();
+  if(trail.length) fetchAndRender(trail[trail.length-1].id);
 };
-document.getElementById("listBtn").onclick = () => {
-  currentView = "list";
+document.getElementById("listBtn").onclick=()=>{
+  view="list";
   document.getElementById("listBtn").classList.add("on");
   document.getElementById("gridBtn").classList.remove("on");
-  reRender();
+  if(trail.length) fetchAndRender(trail[trail.length-1].id);
 };
-async function reRender() {
-  if (!trail.length) return;
-  const cur = trail[trail.length - 1];
-  await fetchAndRender(cur.id);
-}
 
-/* ── Theme ── */
-document.getElementById("themeBtn").onclick = () => {
+/* ══ Theme ══ */
+document.getElementById("themeBtn").onclick=()=>{
   document.body.classList.toggle("light");
   document.getElementById("themeBtn").textContent =
-    document.body.classList.contains("light") ? "🌙" : "☀️";
+    document.body.classList.contains("light") ? "🌙":"☀️";
 };
 
-/* ── Mobile sidebar ── */
-document.getElementById("hamburger").onclick = () => {
+/* ══ Mobile ══ */
+document.getElementById("hamburger").onclick=()=>{
   document.getElementById("sidebar").classList.toggle("open");
   document.getElementById("overlay").classList.toggle("show");
 };
-document.getElementById("overlay").onclick = closeMobileSidebar;
-function closeMobileSidebar() {
+document.getElementById("overlay").onclick=closeMobile;
+function closeMobile(){
   document.getElementById("sidebar").classList.remove("open");
   document.getElementById("overlay").classList.remove("show");
 }
+
+/* ══ Init — load root on start ══ */
+loadRoot();
 </script>
 </body>
 </html>
