@@ -3,341 +3,734 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Drive</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <title>UPSC2027</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet"/>
   <style>
-    /* ── Variables ── */
+    /* ── Tokens ── */
     :root {
-      --bg: #0d0d0d;
-      --surface: #161616;
-      --border: #2a2a2a;
-      --text: #f0f0f0;
-      --sub: #777;
-      --hover: #1f1f1f;
-      --accent: #f0f0f0;
-      --r: 8px;
+      --bg: #0c0c0c; --surface: #141414; --border: #242424;
+      --text: #ededed; --sub: #666; --hover: #1c1c1c; --active: #202020;
+      --sidebar-w: 220px; --topbar-h: 52px; --subnav-h: 40px;
     }
     body.light {
-      --bg: #fafafa;
-      --surface: #ffffff;
-      --border: #e8e8e8;
-      --text: #111;
-      --sub: #888;
-      --hover: #f2f2f2;
-      --accent: #111;
+      --bg: #f8f8f8; --surface: #ffffff; --border: #e4e4e4;
+      --text: #111; --sub: #888; --hover: #f0f0f0; --active: #ebebeb;
     }
 
-    /* ── Reset ── */
+    /* ── Base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      transition: background .2s, color .2s;
-      -webkit-font-smoothing: antialiased;
-    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text);
+      min-height: 100vh; transition: background .2s, color .2s; -webkit-font-smoothing: antialiased; }
+    a { color: inherit; text-decoration: none; }
+    button { all: unset; cursor: pointer; font-family: 'Inter', sans-serif; }
 
-    /* ── Topbar ── */
-    header {
-      position: sticky; top: 0; z-index: 100;
-      background: var(--bg);
+    /* ── TOP NAV ── */
+    #topbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 300;
+      height: var(--topbar-h); background: var(--surface);
       border-bottom: 1px solid var(--border);
-      display: flex; align-items: center;
-      padding: 0 20px; height: 54px; gap: 12px;
+      display: flex; align-items: center; gap: 0; padding: 0 16px;
     }
-    .logo { font-size: 15px; font-weight: 600; flex: 1; letter-spacing: -0.2px; }
+    #hamburger { display: none; font-size: 20px; padding: 6px 10px 6px 0; flex-shrink: 0; }
+    .brand { font-size: 15px; font-weight: 600; letter-spacing: .4px; margin-right: 28px; flex-shrink: 0; }
+    .brand span { font-weight: 300; opacity: .5; }
 
-    /* ── Buttons ── */
-    btn, .btn {
-      all: unset;
-      display: inline-flex; align-items: center; gap: 6px;
-      cursor: pointer; font-family: 'DM Sans', sans-serif;
-      font-size: 13px; font-weight: 500;
-      color: var(--text); padding: 6px 12px;
-      border: 1px solid var(--border); border-radius: var(--r);
-      transition: background .15s, border-color .15s;
-      white-space: nowrap;
+    /* top nav items */
+    #topnav { display: flex; align-items: stretch; gap: 0; flex: 1; overflow-x: auto; scrollbar-width: none; }
+    #topnav::-webkit-scrollbar { display: none; }
+    .tn-item {
+      position: relative; display: flex; align-items: center;
+      padding: 0 14px; height: var(--topbar-h); font-size: 13px; font-weight: 500;
+      color: var(--sub); cursor: pointer; white-space: nowrap;
+      border-bottom: 2px solid transparent;
+      transition: color .15s, border-color .15s;
     }
-    .btn:hover { background: var(--hover); }
-    .btn:disabled { opacity: .3; pointer-events: none; }
-    .btn-icon { padding: 6px 10px; font-size: 16px; }
+    .tn-item:hover, .tn-item.active { color: var(--text); border-bottom-color: var(--text); }
+    .tn-item .caret { font-size: 9px; margin-left: 5px; opacity: .5; }
 
-    /* ── Breadcrumb ── */
+    /* dropdown */
+    .tn-dropdown {
+      position: absolute; top: calc(var(--topbar-h) - 2px); left: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 8px; min-width: 160px; padding: 6px 0;
+      display: none; z-index: 400; box-shadow: 0 8px 24px rgba(0,0,0,.3);
+    }
+    .tn-item:hover .tn-dropdown { display: block; }
+    .tn-dropdown a {
+      display: block; padding: 8px 16px; font-size: 13px; color: var(--sub);
+      transition: background .1s, color .1s;
+    }
+    .tn-dropdown a:hover { background: var(--hover); color: var(--text); }
+
+    /* theme + right */
+    #topbar-right { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+    .theme-btn {
+      font-size: 14px; padding: 5px 10px;
+      border: 1px solid var(--border); border-radius: 6px; color: var(--sub);
+      transition: background .15s;
+    }
+    .theme-btn:hover { background: var(--hover); color: var(--text); }
+
+    /* ── SUB-NAV strip (context) ── */
+    #subnav {
+      position: fixed; top: var(--topbar-h); left: 0; right: 0; z-index: 200;
+      height: var(--subnav-h); background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 16px; gap: 4px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    #subnav::-webkit-scrollbar { display: none; }
+    .sn-pill {
+      padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500;
+      color: var(--sub); border: 1px solid transparent; white-space: nowrap;
+      transition: all .15s;
+    }
+    .sn-pill:hover { color: var(--text); border-color: var(--border); }
+    .sn-pill.active { color: var(--text); background: var(--active); border-color: var(--border); }
+
+    /* ── LAYOUT ── */
+    #layout {
+      display: flex;
+      padding-top: calc(var(--topbar-h) + var(--subnav-h));
+      min-height: 100vh;
+    }
+
+    /* ── SIDEBAR ── */
+    #sidebar {
+      width: var(--sidebar-w); flex-shrink: 0;
+      position: fixed; top: calc(var(--topbar-h) + var(--subnav-h));
+      left: 0; bottom: 0; overflow-y: auto;
+      background: var(--surface); border-right: 1px solid var(--border);
+      padding: 20px 0; transition: transform .25s ease;
+      scrollbar-width: thin; scrollbar-color: var(--border) transparent;
+    }
+    #sidebar.hidden-mobile { transform: translateX(-100%); }
+
+    .sb-section { margin-bottom: 24px; }
+    .sb-label {
+      font-size: 10px; font-weight: 600; letter-spacing: 1px;
+      color: var(--sub); text-transform: uppercase;
+      padding: 0 18px 8px;
+    }
+    .sb-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 7px 18px; font-size: 13px; font-weight: 400;
+      color: var(--sub); cursor: pointer; border-left: 2px solid transparent;
+      transition: all .15s;
+    }
+    .sb-item:hover { color: var(--text); background: var(--hover); }
+    .sb-item.active { color: var(--text); background: var(--active); border-left-color: var(--text); font-weight: 500; }
+    .sb-item .sb-icon { font-size: 15px; flex-shrink: 0; }
+
+    /* sub items */
+    .sb-sub { padding-left: 30px; border-left: 2px solid transparent; }
+    .sb-sub .sb-item { font-size: 12px; padding: 5px 14px 5px 0; }
+
+    /* overlay for mobile */
+    #overlay {
+      display: none; position: fixed; inset: 0; z-index: 150;
+      background: rgba(0,0,0,.5); backdrop-filter: blur(2px);
+    }
+    #overlay.show { display: block; }
+
+    /* ── MAIN ── */
+    #main {
+      flex: 1; margin-left: var(--sidebar-w);
+      padding: 28px 28px 60px; min-width: 0;
+    }
+
+    /* page header */
+    .page-header {
+      display: flex; align-items: flex-end; justify-content: space-between;
+      margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
+    }
+    .page-title { font-size: 22px; font-weight: 600; letter-spacing: -.3px; }
+    .page-sub { font-size: 13px; color: var(--sub); margin-top: 3px; }
+    .view-toggle { display: flex; gap: 4px; }
+    .vbtn {
+      padding: 5px 10px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 15px; color: var(--sub); transition: all .15s;
+    }
+    .vbtn:hover, .vbtn.on { color: var(--text); background: var(--active); border-color: var(--border); }
+
+    /* breadcrumb */
     .breadcrumb {
-      display: flex; align-items: center; flex-wrap: wrap;
-      gap: 4px; padding: 12px 20px 0;
-      font-size: 12px; color: var(--sub);
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      font-size: 12px; color: var(--sub); margin-bottom: 20px;
     }
     .breadcrumb span { cursor: pointer; transition: color .15s; }
     .breadcrumb span:hover { color: var(--text); }
     .breadcrumb .cur { color: var(--text); font-weight: 500; cursor: default; }
     .breadcrumb .sep { opacity: .3; }
 
-    /* ── Toolbar ── */
-    .toolbar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 14px 20px 8px;
+    /* ── Grid & List ── */
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px,1fr)); gap: 12px; }
+    .list { display: flex; flex-direction: column; gap: 2px; }
+
+    .card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 10px; padding: 16px 14px; cursor: pointer;
+      display: flex; flex-direction: column; gap: 10px;
+      transition: border-color .15s, transform .15s;
     }
-    .folder-title { font-size: 18px; font-weight: 600; flex: 1; letter-spacing: -0.3px; }
+    .card:hover { border-color: var(--text); transform: translateY(-2px); }
+    .card .c-icon { font-size: 26px; }
+    .card .c-name { font-size: 13px; font-weight: 500; line-height: 1.4;
+      overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+    .card .c-type { font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: .4px; }
 
-    /* ── File List ── */
-    #files { padding: 0 20px 60px; }
-
-    .file-row {
+    .row {
       display: flex; align-items: center; gap: 14px;
-      padding: 13px 14px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      border-radius: var(--r);
-      transition: background .15s;
+      padding: 10px 12px; border-radius: 8px; cursor: pointer;
+      border: 1px solid transparent; transition: background .15s, border-color .15s;
     }
-    .file-row:hover { background: var(--hover); }
+    .row:hover { background: var(--hover); border-color: var(--border); }
+    .row .c-icon { font-size: 18px; flex-shrink: 0; width: 26px; text-align: center; }
+    .row .c-name { font-size: 13px; font-weight: 400; flex: 1;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .row .c-type { font-size: 11px; color: var(--sub); text-transform: uppercase; letter-spacing: .4px; flex-shrink: 0; }
+    .row .c-chev { color: var(--sub); font-size: 14px; flex-shrink: 0; }
 
-    .file-emoji { font-size: 20px; flex-shrink: 0; width: 28px; text-align: center; }
-
-    .file-info { flex: 1; min-width: 0; }
-    .file-name {
-      font-size: 14px; font-weight: 500;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    .file-meta { font-size: 11px; color: var(--sub); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; }
-
-    .file-chevron { color: var(--sub); font-size: 14px; flex-shrink: 0; }
-
-    /* ── States ── */
-    .state {
-      text-align: center; padding: 60px 20px;
-      color: var(--sub); font-size: 14px;
-    }
-    .spinner {
-      width: 26px; height: 26px;
-      border: 2px solid var(--border);
-      border-top-color: var(--text);
-      border-radius: 50%;
-      animation: spin .65s linear infinite;
-      margin: 0 auto 14px;
-    }
+    /* state */
+    .state { text-align: center; padding: 80px 20px; color: var(--sub); font-size: 14px; }
+    .spinner { width: 24px; height: 24px; border: 2px solid var(--border);
+      border-top-color: var(--text); border-radius: 50%;
+      animation: spin .6s linear infinite; margin: 0 auto 14px; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* ── Viewer ── */
+    /* ── IMAGE VIEWER ── */
     #viewer {
-      position: fixed; inset: 0; z-index: 200;
-      background: var(--bg);
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(0,0,0,.95);
       display: none; flex-direction: column;
     }
-    #viewer.active { display: flex; }
-
-    .viewer-bar {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
+    #viewer.on { display: flex; }
+    .vbar {
+      background: var(--surface); border-bottom: 1px solid var(--border);
       display: flex; align-items: center; gap: 10px;
       padding: 0 16px; height: 52px; flex-shrink: 0;
     }
-    .viewer-name {
-      flex: 1; font-size: 13px; font-weight: 500;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    .vbar-name { flex: 1; font-size: 13px; font-weight: 500;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .vbar-btn {
+      padding: 5px 12px; border: 1px solid var(--border); border-radius: 6px;
+      font-size: 13px; color: var(--sub); transition: all .15s;
     }
+    .vbar-btn:hover { background: var(--hover); color: var(--text); }
 
-    #viewerContent {
-      flex: 1; display: flex;
-      align-items: center; justify-content: center;
-      overflow: hidden; background: var(--bg);
+    #vcontent {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      overflow: hidden; position: relative;
     }
-    #viewerContent iframe {
-      width: 100%; height: 100%; border: none; display: block;
-    }
-    #viewerContent img {
-      max-width: 100%; max-height: 100%;
-      object-fit: contain; display: block;
-      padding: 16px;
-    }
+    #vcontent img { max-width: 100%; max-height: 100%; object-fit: contain; padding: 16px; display: block; }
+    #vcontent iframe { width: 100%; height: 100%; border: none; }
 
-    /* ── Theme icon ── */
-    #themeBtn { font-size: 17px; padding: 4px 8px; border: none; background: transparent; cursor: pointer; }
+    /* prev / next */
+    .nav-arrow {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15);
+      color: #fff; font-size: 22px; padding: 10px 14px; border-radius: 8px;
+      transition: background .15s; z-index: 10;
+    }
+    .nav-arrow:hover { background: rgba(255,255,255,.18); }
+    #prevBtn { left: 16px; }
+    #nextBtn { right: 16px; }
+    .nav-arrow:disabled { opacity: .2; pointer-events: none; }
+    .img-counter { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%);
+      font-size: 12px; color: rgba(255,255,255,.4); pointer-events: none; }
 
-    /* ── Mobile tweaks ── */
-    @media (max-width: 480px) {
-      header { padding: 0 14px; }
-      .breadcrumb, .toolbar, #files { padding-left: 14px; padding-right: 14px; }
-      .folder-title { font-size: 16px; }
-      .viewer-bar { padding: 0 12px; }
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      #hamburger { display: block; }
+      #sidebar { transform: translateX(-100%); z-index: 160; }
+      #sidebar.open { transform: translateX(0); }
+      #main { margin-left: 0; padding: 20px 16px 60px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(130px,1fr)); }
+      .page-title { font-size: 18px; }
+      #topnav { display: none; }
     }
   </style>
 </head>
 <body>
 
-  <header>
-    <span class="logo">My Drive</span>
-    <button class="btn" id="backBtn" disabled>← Back</button>
-    <button id="themeBtn">☀️</button>
-  </header>
+<!-- ── TOP NAV ── -->
+<nav id="topbar">
+  <button id="hamburger">☰</button>
+  <div class="brand">UPSC<span>2027</span></div>
 
-  <div class="breadcrumb" id="breadcrumb"></div>
-
-  <div class="toolbar">
-    <span class="folder-title" id="folderTitle">All Files</span>
-  </div>
-
-  <div id="files"></div>
-
-  <!-- Viewer -->
-  <div id="viewer">
-    <div class="viewer-bar">
-      <button class="btn" id="closeViewer">✕</button>
-      <span class="viewer-name" id="viewerName"></span>
-      <a class="btn" id="driveLink" href="#" target="_blank">Open ↗</a>
+  <div id="topnav">
+    <div class="tn-item" onclick="loadSection('prelims','GS')">
+      PRELIMS <span class="caret">▾</span>
+      <div class="tn-dropdown">
+        <a onclick="loadSection('prelims','GS');event.stopPropagation()">GS</a>
+        <a onclick="loadSection('prelims','CSAT');event.stopPropagation()">CSAT</a>
+      </div>
     </div>
-    <div id="viewerContent"></div>
+    <div class="tn-item" onclick="loadSection('mains','GS4')">
+      MAINS <span class="caret">▾</span>
+      <div class="tn-dropdown">
+        <a onclick="loadSection('mains','GS1');event.stopPropagation()">GS1</a>
+        <a onclick="loadSection('mains','GS2');event.stopPropagation()">GS2</a>
+        <a onclick="loadSection('mains','GS3');event.stopPropagation()">GS3</a>
+        <a onclick="loadSection('mains','GS4');event.stopPropagation()">GS4</a>
+        <a onclick="loadSection('mains','ESSAY');event.stopPropagation()">Essay</a>
+        <a onclick="loadSection('mains','TELUGU');event.stopPropagation()">Telugu</a>
+        <a onclick="loadSection('mains','ENGLISH');event.stopPropagation()">English</a>
+      </div>
+    </div>
+    <div class="tn-item" onclick="loadSection('interview','ROOT')">INTERVIEW</div>
+    <div class="tn-item" onclick="loadSection('subjects','ROOT')">
+      SUBJECTS <span class="caret">▾</span>
+      <div class="tn-dropdown" id="subjectsDropdown">
+        <!-- auto-populated or static list -->
+        <a onclick="loadSection('subjects','ROOT');event.stopPropagation()">All Subjects</a>
+      </div>
+    </div>
+    <div class="tn-item" onclick="loadSection('joplin','ROOT')">JOPLIN NOTES</div>
+    <div class="tn-item" onclick="loadSection('maths','ROOT')">MATHEMATICS OPTIONAL</div>
   </div>
 
-  <script>
-    const API_KEY = "AIzaSyAGL2uXdY9SSz3ROPm0vjYdLzy2wGh4ryc";
-    const ROOT_ID = "1jL6z2VKzFhklPVzXLe2W6dSXOY5GmI0T";
+  <div id="topbar-right">
+    <button class="theme-btn" id="themeBtn">☀️</button>
+  </div>
+</nav>
 
-    let trail = [{ id: ROOT_ID, name: "My Drive" }];
+<!-- ── SUB NAV ── -->
+<div id="subnav"></div>
 
-    /* ─ Icons ─ */
-    function icon(mime) {
-      if (mime === "application/vnd.google-apps.folder") return "📁";
-      if (mime.includes("pdf"))          return "📄";
-      if (mime.includes("image"))        return "🖼";
-      if (mime.includes("video"))        return "🎬";
-      if (mime.includes("audio"))        return "🎵";
-      if (mime.includes("spreadsheet") || mime.includes("excel")) return "📊";
-      if (mime.includes("presentation")) return "📑";
-      if (mime.includes("document") || mime.includes("word"))     return "📝";
-      return "📎";
+<!-- overlay -->
+<div id="overlay"></div>
+
+<!-- ── LAYOUT ── -->
+<div id="layout">
+
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sb-section">
+      <div class="sb-label">Exam</div>
+      <div class="sb-item" data-sec="prelims" onclick="loadSection('prelims','GS')">
+        <span class="sb-icon">📘</span> Prelims
+      </div>
+      <div class="sb-sub" id="sb-prelims" style="display:none">
+        <div class="sb-item" onclick="loadSection('prelims','GS')">GS</div>
+        <div class="sb-item" onclick="loadSection('prelims','CSAT')">CSAT</div>
+      </div>
+      <div class="sb-item" data-sec="mains" onclick="loadSection('mains','GS4')">
+        <span class="sb-icon">📗</span> Mains
+      </div>
+      <div class="sb-sub" id="sb-mains" style="display:none">
+        <div class="sb-item" onclick="loadSection('mains','GS1')">GS1</div>
+        <div class="sb-item" onclick="loadSection('mains','GS2')">GS2</div>
+        <div class="sb-item" onclick="loadSection('mains','GS3')">GS3</div>
+        <div class="sb-item" onclick="loadSection('mains','GS4')">GS4</div>
+        <div class="sb-item" onclick="loadSection('mains','ESSAY')">Essay</div>
+        <div class="sb-item" onclick="loadSection('mains','TELUGU')">Telugu</div>
+        <div class="sb-item" onclick="loadSection('mains','ENGLISH')">English</div>
+      </div>
+      <div class="sb-item" data-sec="interview" onclick="loadSection('interview','ROOT')">
+        <span class="sb-icon">🎙️</span> Interview
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Resources</div>
+      <div class="sb-item" data-sec="subjects" onclick="loadSection('subjects','ROOT')">
+        <span class="sb-icon">📚</span> Subjects
+      </div>
+      <div class="sb-sub" id="sb-subjects" style="display:none">
+        <div class="sb-item" onclick="loadSubject('POLITY')">Polity</div>
+        <div class="sb-item" onclick="loadSubject('ECONOMY')">Economy</div>
+        <div class="sb-item" onclick="loadSubject('GEOGRAPHY')">Geography</div>
+        <div class="sb-item" onclick="loadSubject('HISTORY')">History</div>
+        <div class="sb-item" onclick="loadSubject('ENVIRONMENT')">Environment</div>
+        <div class="sb-item" onclick="loadSubject('CURRENT EVENTS')">Current Events</div>
+        <div class="sb-item" onclick="loadSubject('SCIENCE AND TECHNOLOGY')">Science & Tech</div>
+        <div class="sb-item" onclick="loadSubject('ART AND CULTURE')">Art & Culture</div>
+        <div class="sb-item" onclick="loadSubject('INDIAN SOCIETY')">Indian Society</div>
+        <div class="sb-item" onclick="loadSubject('GOVERNANCE')">Governance</div>
+        <div class="sb-item" onclick="loadSubject('INTERNATIONAL RELATIONS')">Intl. Relations</div>
+        <div class="sb-item" onclick="loadSubject('DISASTER MANAGEMENT')">Disaster Mgmt</div>
+        <div class="sb-item" onclick="loadSubject('INTERNAL SECURITY')">Internal Security</div>
+      </div>
+      <div class="sb-item" data-sec="joplin" onclick="loadSection('joplin','ROOT')">
+        <span class="sb-icon">📓</span> Joplin Notes
+      </div>
+      <div class="sb-item" data-sec="maths" onclick="loadSection('maths','ROOT')">
+        <span class="sb-icon">📐</span> Maths Optional
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main">
+    <div class="page-header">
+      <div>
+        <div class="page-title" id="pageTitle">Welcome</div>
+        <div class="page-sub" id="pageSub">Select a section to get started</div>
+      </div>
+      <div class="view-toggle">
+        <button class="vbtn on" id="gridBtn" title="Grid">⊞</button>
+        <button class="vbtn" id="listBtn" title="List">☰</button>
+      </div>
+    </div>
+    <div class="breadcrumb" id="breadcrumb"></div>
+    <div id="files">
+      <div class="state">
+        <div style="font-size:36px;margin-bottom:12px">📖</div>
+        Select a section from the sidebar or top navigation to browse your materials.
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- ── VIEWER ── -->
+<div id="viewer">
+  <div class="vbar">
+    <button class="vbar-btn" id="closeViewer">✕ Close</button>
+    <span class="vbar-name" id="vname"></span>
+    <a class="vbar-btn" id="vdrivelink" href="#" target="_blank">↗ Drive</a>
+  </div>
+  <div id="vcontent">
+    <button class="nav-arrow" id="prevBtn">‹</button>
+    <button class="nav-arrow" id="nextBtn">›</button>
+    <div class="img-counter" id="imgCounter"></div>
+  </div>
+</div>
+
+<script>
+const API_KEY = "AIzaSyAGL2uXdY9SSz3ROPm0vjYdLzy2wGh4ryc";
+
+/* ── Folder config ── */
+const FOLDERS = {
+  prelims: {
+    GS:   "1B0UInKhvD3qgsW3Tcnj6KBo-LnkUIacS",
+    CSAT: "14_cjaMTUGZauYi4AQVfRt0jzXcmbNCfJ"
+  },
+  mains: {
+    GS1:     null, // add later
+    GS2:     null,
+    GS3:     null,
+    GS4:     "1lA2CMXBwEmdfB358YeqB9vGX0H0h-xBo",
+    ESSAY:   "12w1BlvoIkApqoKXoJW5sX0e-p2HsVjAq",
+    TELUGU:  "1qFksmqvlf0hODfdXWi7MTQMY2h94slZF",
+    ENGLISH: "14dnXcVuv3CaMrcTEJIor8kzmtWH6ZHwR"
+  },
+  interview: { ROOT: "1njbqGeXmfJMf_ZkP18DjzGP-7irNxu0L" },
+  subjects:  { ROOT: null }, // top-level; sub-folders below
+  joplin:    { ROOT: "1CuzLV1FrWNEIUz4I-7n_OQDbSaKpMIQP" },
+  maths:     { ROOT: "1bYTlCn4rCmMLTh3zqT-zIa2Gq7f0BmbP" }
+};
+
+/* Subject folder IDs — fill in when ready */
+const SUBJECT_IDS = {
+  "POLITY": null, "ECONOMY": null, "GEOGRAPHY": null, "HISTORY": null,
+  "ENVIRONMENT": null, "CURRENT EVENTS": null, "SCIENCE AND TECHNOLOGY": null,
+  "ART AND CULTURE": null, "INDIAN SOCIETY": null, "GOVERNANCE": null,
+  "INTERNATIONAL RELATIONS": null, "DISASTER MANAGEMENT": null, "INTERNAL SECURITY": null
+};
+
+/* ── State ── */
+let currentView = "grid";
+let trail = [];
+let currentSection = "";
+let currentSub = "";
+
+// Image navigation state
+let imageFiles = [];
+let imageIndex = 0;
+
+/* ── Helpers ── */
+function icon(mime) {
+  if (mime === "application/vnd.google-apps.folder") return "📁";
+  if (mime.includes("pdf"))    return "📄";
+  if (mime.includes("image"))  return "🖼";
+  if (mime.includes("video"))  return "🎬";
+  if (mime.includes("audio"))  return "🎵";
+  if (mime.includes("spreadsheet") || mime.includes("excel")) return "📊";
+  if (mime.includes("presentation")) return "📑";
+  if (mime.includes("document") || mime.includes("word")) return "📝";
+  return "📎";
+}
+function typeLabel(mime) {
+  if (mime === "application/vnd.google-apps.folder") return "Folder";
+  if (mime.includes("pdf"))    return "PDF";
+  if (mime.includes("image"))  return "Image";
+  if (mime.includes("video"))  return "Video";
+  if (mime.includes("audio"))  return "Audio";
+  if (mime.includes("spreadsheet") || mime.includes("excel")) return "Sheet";
+  if (mime.includes("presentation")) return "Slides";
+  if (mime.includes("document") || mime.includes("word")) return "Doc";
+  return "File";
+}
+
+/* ── Load from Drive ── */
+async function driveList(folderId) {
+  const url = `https://www.googleapis.com/drive/v3/files?q=%27${folderId}%27+in+parents+and+trashed%3Dfalse&key=${API_KEY}&fields=files(id,name,mimeType)&orderBy=folder,name`;
+  const r = await fetch(url);
+  return r.json();
+}
+
+/* ── Render files ── */
+function renderFiles(files) {
+  const el = document.getElementById("files");
+  el.innerHTML = "";
+  if (!files.length) { el.innerHTML = `<div class="state">This folder is empty.</div>`; return; }
+
+  const wrap = document.createElement("div");
+  wrap.className = currentView === "grid" ? "grid" : "list";
+
+  // collect images for lightbox nav
+  imageFiles = files.filter(f => f.mimeType.includes("image"));
+
+  files.forEach(f => {
+    const isFolder = f.mimeType === "application/vnd.google-apps.folder";
+    const el2 = document.createElement("div");
+    el2.className = currentView === "grid" ? "card" : "row";
+
+    if (currentView === "grid") {
+      el2.innerHTML = `
+        <div class="c-icon">${icon(f.mimeType)}</div>
+        <div class="c-name">${f.name}</div>
+        <div class="c-type">${typeLabel(f.mimeType)}</div>`;
+    } else {
+      el2.innerHTML = `
+        <span class="c-icon">${icon(f.mimeType)}</span>
+        <span class="c-name">${f.name}</span>
+        <span class="c-type">${typeLabel(f.mimeType)}</span>
+        <span class="c-chev">${isFolder ? "›" : ""}</span>`;
     }
-    function label(mime) {
-      if (mime === "application/vnd.google-apps.folder") return "Folder";
-      if (mime.includes("pdf"))          return "PDF";
-      if (mime.includes("image"))        return "Image";
-      if (mime.includes("video"))        return "Video";
-      if (mime.includes("audio"))        return "Audio";
-      if (mime.includes("spreadsheet") || mime.includes("excel")) return "Spreadsheet";
-      if (mime.includes("presentation")) return "Presentation";
-      if (mime.includes("document") || mime.includes("word"))     return "Document";
-      return "File";
+
+    if (isFolder) {
+      el2.onclick = () => drillInto(f.id, f.name);
+    } else {
+      el2.onclick = () => openFile(f);
     }
+    wrap.appendChild(el2);
+  });
 
-    /* ─ Load ─ */
-    async function load(id) {
-      const el = document.getElementById("files");
-      el.innerHTML = `<div class="state"><div class="spinner"></div>Loading…</div>`;
+  el.appendChild(wrap);
+}
 
-      try {
-        const url = `https://www.googleapis.com/drive/v3/files?q=%27${id}%27+in+parents+and+trashed%3Dfalse&key=${API_KEY}&fields=files(id,name,mimeType)&orderBy=folder,name`;
-        const data = await fetch(url).then(r => r.json());
+/* ── Load a named section/sub ── */
+async function loadSection(sec, sub) {
+  currentSection = sec; currentSub = sub;
+  trail = [];
 
-        el.innerHTML = "";
-        if (!data.files?.length) {
-          el.innerHTML = `<div class="state">This folder is empty.</div>`;
-          return;
-        }
+  // resolve folder id
+  const id = FOLDERS[sec]?.[sub];
+  const labels = { prelims:"Prelims", mains:"Mains", interview:"Interview",
+                   subjects:"Subjects", joplin:"Joplin Notes", maths:"Maths Optional" };
 
-        data.files.forEach(f => {
-          const row = document.createElement("div");
-          row.className = "file-row";
-          const isFolder = f.mimeType === "application/vnd.google-apps.folder";
-          row.innerHTML = `
-            <span class="file-emoji">${icon(f.mimeType)}</span>
-            <div class="file-info">
-              <div class="file-name">${f.name}</div>
-              <div class="file-meta">${label(f.mimeType)}</div>
-            </div>
-            <span class="file-chevron">${isFolder ? "›" : ""}</span>`;
-          row.onclick = isFolder ? () => navigateTo(f.id, f.name) : () => openFile(f);
-          el.appendChild(row);
-        });
-      } catch (e) {
-        el.innerHTML = `<div class="state">Failed to load. Check your API key & sharing settings.</div>`;
-      }
+  document.getElementById("pageTitle").textContent = labels[sec] || sec;
+  document.getElementById("pageSub").textContent = sub === "ROOT" ? "" : sub;
+  updateSubnav(sec);
+  highlightSidebar(sec, sub);
+  closeMobileSidebar();
 
-      syncUI();
-    }
+  if (!id) {
+    document.getElementById("files").innerHTML = `<div class="state">📂 Folder coming soon — ID not set yet.</div>`;
+    updateBreadcrumb();
+    return;
+  }
 
-    /* ─ Navigation ─ */
-    function navigateTo(id, name) {
-      trail.push({ id, name });
-      load(id);
-    }
+  trail.push({ id, name: sub === "ROOT" ? labels[sec] : sub });
+  await fetchAndRender(id);
+}
 
-    document.getElementById("backBtn").onclick = () => {
-      if (trail.length <= 1) return;
-      trail.pop();
-      load(trail[trail.length - 1].id);
-    };
+async function fetchAndRender(folderId) {
+  document.getElementById("files").innerHTML = `<div class="state"><div class="spinner"></div>Loading…</div>`;
+  try {
+    const data = await driveList(folderId);
+    renderFiles(data.files || []);
+  } catch(e) {
+    document.getElementById("files").innerHTML = `<div class="state">Failed to load. Check API key & sharing settings.</div>`;
+  }
+  updateBreadcrumb();
+}
 
-    function jumpTo(i) {
-      trail = trail.slice(0, i + 1);
-      load(trail[trail.length - 1].id);
-    }
+async function drillInto(id, name) {
+  trail.push({ id, name });
+  await fetchAndRender(id);
+}
 
-    function syncUI() {
-      const cur = trail[trail.length - 1];
-      document.getElementById("folderTitle").textContent =
-        trail.length > 1 ? cur.name : "All Files";
-      document.getElementById("backBtn").disabled = trail.length <= 1;
+/* Subjects shortcut */
+function loadSubject(name) {
+  currentSection = "subjects"; currentSub = name;
+  const id = SUBJECT_IDS[name];
+  document.getElementById("pageTitle").textContent = name;
+  document.getElementById("pageSub").textContent = "Subjects";
+  updateSubnav("subjects");
+  highlightSidebar("subjects", name);
+  closeMobileSidebar();
+  trail = [{ id: id || null, name }];
+  if (!id) {
+    document.getElementById("files").innerHTML = `<div class="state">📂 Folder coming soon — ID not set yet.</div>`;
+    updateBreadcrumb(); return;
+  }
+  fetchAndRender(id);
+}
 
-      const bc = document.getElementById("breadcrumb");
-      bc.innerHTML = trail.map((c, i) => {
-        const last = i === trail.length - 1;
-        return last
-          ? `<span class="cur">${c.name}</span>`
-          : `<span onclick="jumpTo(${i})">${c.name}</span><span class="sep"> / </span>`;
-      }).join("");
-    }
+/* ── Sub-nav strip ── */
+const SUBNAV_CONFIG = {
+  prelims:   [{ label: "GS", sub: "GS" }, { label: "CSAT", sub: "CSAT" }],
+  mains:     [{ label:"GS1",sub:"GS1" },{ label:"GS2",sub:"GS2" },{ label:"GS3",sub:"GS3" },
+               { label:"GS4",sub:"GS4" },{ label:"Essay",sub:"ESSAY" },
+               { label:"Telugu",sub:"TELUGU" },{ label:"English",sub:"ENGLISH" }],
+  interview: [],
+  subjects:  Object.keys(SUBJECT_IDS).map(k => ({ label: k, sub: k })),
+  joplin:    [],
+  maths:     []
+};
 
-    /* ─ Open File ─ */
-    function openFile(f) {
-      const viewer  = document.getElementById("viewer");
-      const content = document.getElementById("viewerContent");
+function updateSubnav(sec) {
+  const sn = document.getElementById("subnav");
+  sn.innerHTML = "";
+  const items = SUBNAV_CONFIG[sec] || [];
+  items.forEach(item => {
+    const pill = document.createElement("button");
+    pill.className = "sn-pill" + (item.sub === currentSub ? " active" : "");
+    pill.textContent = item.label;
+    pill.onclick = sec === "subjects"
+      ? () => loadSubject(item.sub)
+      : () => loadSection(sec, item.sub);
+    sn.appendChild(pill);
+  });
+}
 
-      document.getElementById("viewerName").textContent = f.name;
-      document.getElementById("driveLink").href = `https://drive.google.com/file/d/${f.id}/view`;
-      content.innerHTML = "";
-      viewer.classList.add("active");
+/* ── Breadcrumb ── */
+function updateBreadcrumb() {
+  const bc = document.getElementById("breadcrumb");
+  bc.innerHTML = trail.map((c, i) => {
+    const last = i === trail.length - 1;
+    return last
+      ? `<span class="cur">${c.name}</span>`
+      : `<span onclick="jumpTo(${i})">${c.name}</span><span class="sep"> / </span>`;
+  }).join("");
+}
 
-      if (f.mimeType.includes("image")) {
-        // Use thumbnail URL which is publicly accessible for shared files
-        const img = document.createElement("img");
-        img.alt = f.name;
-        // Try the uc export first; if it fails fall back to thumbnail
-        img.onerror = () => {
-          img.onerror = null;
-          img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`;
-        };
-        img.src = `https://lh3.googleusercontent.com/d/${f.id}`;
-        content.appendChild(img);
-      } else {
-        const iframe = document.createElement("iframe");
-        iframe.src = `https://drive.google.com/file/d/${f.id}/preview`;
-        iframe.allow = "autoplay";
-        iframe.allowFullscreen = true;
-        content.appendChild(iframe);
-      }
-    }
+function jumpTo(i) {
+  trail = trail.slice(0, i + 1);
+  const cur = trail[trail.length - 1];
+  fetchAndRender(cur.id);
+}
 
-    /* ─ Close Viewer ─ */
-    document.getElementById("closeViewer").onclick = () => {
-      document.getElementById("viewer").classList.remove("active");
-      document.getElementById("viewerContent").innerHTML = "";
-    };
-    document.addEventListener("keydown", e => {
-      if (e.key === "Escape") document.getElementById("closeViewer").click();
-    });
+/* ── Sidebar highlight ── */
+function highlightSidebar(sec, sub) {
+  document.querySelectorAll(".sb-item[data-sec]").forEach(el => el.classList.remove("active"));
+  const target = document.querySelector(`.sb-item[data-sec="${sec}"]`);
+  if (target) target.classList.add("active");
 
-    /* ─ Theme ─ */
-    const themeBtn = document.getElementById("themeBtn");
-    themeBtn.onclick = () => {
-      document.body.classList.toggle("light");
-      themeBtn.textContent = document.body.classList.contains("light") ? "🌙" : "☀️";
-    };
+  // expand sub-list
+  ["prelims","mains","subjects"].forEach(s => {
+    const el = document.getElementById(`sb-${s}`);
+    if (el) el.style.display = s === sec ? "block" : "none";
+  });
+}
 
-    /* ─ Init ─ */
-    load(ROOT_ID);
-    syncUI();
-  </script>
+/* ── Open File / Viewer ── */
+function openFile(f) {
+  if (f.mimeType.includes("image")) {
+    imageIndex = imageFiles.findIndex(x => x.id === f.id);
+    showImage();
+  } else {
+    showInViewer(f, false);
+  }
+}
+
+function showInViewer(f, isImg) {
+  const viewer = document.getElementById("viewer");
+  const content = document.getElementById("vcontent");
+  document.getElementById("vname").textContent = f.name;
+  document.getElementById("vdrivelink").href = `https://drive.google.com/file/d/${f.id}/view`;
+
+  // remove old media
+  content.querySelectorAll("img, iframe").forEach(e => e.remove());
+
+  if (isImg) {
+    const img = document.createElement("img");
+    img.onerror = () => { img.src = `https://drive.google.com/thumbnail?id=${f.id}&sz=w2000`; };
+    img.src = `https://lh3.googleusercontent.com/d/${f.id}`;
+    content.appendChild(img);
+    document.getElementById("prevBtn").style.display = "";
+    document.getElementById("nextBtn").style.display = "";
+    updateArrows();
+    document.getElementById("imgCounter").textContent = `${imageIndex + 1} / ${imageFiles.length}`;
+  } else {
+    const iframe = document.createElement("iframe");
+    iframe.src = `https://drive.google.com/file/d/${f.id}/preview`;
+    iframe.allow = "autoplay";
+    content.appendChild(iframe);
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("imgCounter").textContent = "";
+  }
+
+  viewer.classList.add("on");
+}
+
+function showImage() {
+  const f = imageFiles[imageIndex];
+  if (f) showInViewer(f, true);
+}
+
+function updateArrows() {
+  document.getElementById("prevBtn").disabled = imageIndex === 0;
+  document.getElementById("nextBtn").disabled = imageIndex === imageFiles.length - 1;
+}
+
+document.getElementById("prevBtn").onclick = () => { if (imageIndex > 0) { imageIndex--; showImage(); } };
+document.getElementById("nextBtn").onclick = () => { if (imageIndex < imageFiles.length - 1) { imageIndex++; showImage(); } };
+
+// Keyboard nav
+document.addEventListener("keydown", e => {
+  const v = document.getElementById("viewer");
+  if (!v.classList.contains("on")) return;
+  if (e.key === "ArrowLeft") document.getElementById("prevBtn").click();
+  if (e.key === "ArrowRight") document.getElementById("nextBtn").click();
+  if (e.key === "Escape") document.getElementById("closeViewer").click();
+});
+
+document.getElementById("closeViewer").onclick = () => {
+  document.getElementById("viewer").classList.remove("on");
+  document.getElementById("vcontent").querySelectorAll("img,iframe").forEach(e => e.remove());
+};
+
+/* ── View toggle ── */
+document.getElementById("gridBtn").onclick = () => {
+  currentView = "grid";
+  document.getElementById("gridBtn").classList.add("on");
+  document.getElementById("listBtn").classList.remove("on");
+  reRender();
+};
+document.getElementById("listBtn").onclick = () => {
+  currentView = "list";
+  document.getElementById("listBtn").classList.add("on");
+  document.getElementById("gridBtn").classList.remove("on");
+  reRender();
+};
+async function reRender() {
+  if (!trail.length) return;
+  const cur = trail[trail.length - 1];
+  await fetchAndRender(cur.id);
+}
+
+/* ── Theme ── */
+document.getElementById("themeBtn").onclick = () => {
+  document.body.classList.toggle("light");
+  document.getElementById("themeBtn").textContent =
+    document.body.classList.contains("light") ? "🌙" : "☀️";
+};
+
+/* ── Mobile sidebar ── */
+document.getElementById("hamburger").onclick = () => {
+  document.getElementById("sidebar").classList.toggle("open");
+  document.getElementById("overlay").classList.toggle("show");
+};
+document.getElementById("overlay").onclick = closeMobileSidebar;
+function closeMobileSidebar() {
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
+}
+</script>
 </body>
 </html>
